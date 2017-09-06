@@ -14,9 +14,9 @@ Beyond simply populating the existing Cognitive Atlas, there may be a wide varie
 
 
 ## Primary Goals:
-  1. What is the structure of cognitive neuroscience concepts present in the literature accessible through PubMed?
-	2. How do these relationships compare with the relationships already listed in the Cognitive Atlas? Is our analysis consistent with the explicitly defined connections?
-	3. Does this conceptual organization line up with our intuitions about these concepts? How can we validate this approach?
+1. What is the structure of cognitive neuroscience concepts present in the literature accessible through PubMed?
+2. How do these relationships compare with the relationships already listed in the Cognitive Atlas? Is our analysis consistent with the explicitly defined connections?
+3. Does this conceptual organization line up with our intuitions about these concepts? How can we validate this approach?
 
 ## Possible future extensions:
 * How have important concepts in Cognitive Neuroscience changed over time (i.e. does restricting the range of years change the associations with a given concept)?
