@@ -1,0 +1,83 @@
+01-P100
+02-P150
+03-P180
+04-P200
+05-P220
+06-P240
+07-P250
+08-P270
+09-P300
+10-P3a
+11-P3b
+12-P340
+13-P350
+14-P400
+15-P500
+16-P550
+17-P600
+18-N75
+19-N80
+20-N90
+21-N100
+22-N110
+23-N120
+24-N130
+25-N140
+26-N150
+27-N160
+28-N170
+29-N180
+30-N190
+31-N200
+32-MMN,mismatch negativity
+33-N2a
+34-N2b
+35-N2c
+36-N240
+37-N250
+38-N270
+39-N280
+40-N2pc
+41-N300
+42-N320
+43-N350
+44-N380
+45-N400
+46-N450
+47-N550
+48-N600
+49-N700
+50-late positive component, late positive complex
+51-late positive potential, late positive potentials
+52-negative slow wave
+53-positive slow wave
+54-vertex positive potential
+55-contingent negative variation
+56-post imperative negative variation
+57-early left anterior negativity
+58-left anterior negativity
+59-closure positive shift
+60-lateralized readiness potential
+61-late discriminative negativity
+62-object related negativity
+63-readiness potential,bereitschaftspotential
+64-error related negativity
+65-error related positivity,error positivity,post error positivity
+66-correct related negativity,correct response negativity
+67-medial frontal negativity
+68-stimulus preceding negativity
+69-feedback related negativity
+70-distractor positivity
+71-early directing attention negativity
+72-late directing attention positivity
+73-anterior directing attention negativity
+74-early posterior negativity
+75-selection negativity
+76-selection positivity
+77-sustained posterior negativity
+78-sustained posterior contralateral negativity
+79-reversal negativity
+80-vsep,vestibular sensory evoked potentials,vestibular evoked potentials
+81-movement related cortical potential, movement related cortical potentials
+82-frontal selection positivity, fronto polar selection positivity
+83-prefrontal negativity

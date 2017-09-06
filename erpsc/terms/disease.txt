@@ -1,0 +1,25 @@
+alcoholism
+addiction
+attention deficit hyperactivity disorder,ADHD
+alzheimer
+anorexia
+anxiety
+aphasia
+autism
+bipolar
+dementia
+depression
+down syndrome
+dyslexia
+epilepsy,seizure
+insomnia
+migraine
+mild cognitive impairment
+multiple sclerosis
+obsessive compulsive disorder
+parkinson
+personality disorder
+post traumatic stress disorder,PTSD
+psychosis
+schizophrenia
+stroke
