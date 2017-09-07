@@ -6,18 +6,18 @@ from lisc.core.db import check_db
 from lisc.core.errors import InconsistentDataError
 
 ##################################################################################
-################################ ERPSC - ERPWords ################################
+################################ termSC - termWords ################################
 ##################################################################################
 
 class Data(object):
-    """An object to hold the word results for a given ERP or term.
+    """An object to hold the word results for a given term or term.
 
     Attributes
     ----------
     label : str
-        Label for the current ERP.
-    erp : list of str
-        Name(s) of the ERP word data relates to (search terms).
+        Label for the current term.
+    term : list of str
+        Name(s) of the term word data relates to (search terms).
     ids : list of int
         Pubmed article ids for all articles included in object.
     n_articles : int
@@ -44,20 +44,20 @@ class Data(object):
         History of the object and it's data.
     """
 
-    def __init__(self, label, erp=[]):
-        """Initialize ERPWords() object.
+    def __init__(self, label, term=[]):
+        """Initialize termWords() object.
 
         Parameters
         ----------
         label : str
-            Label for the ERP.
-        erp  : list of str
-            Name(s) of the ERP.
+            Label for the term.
+        term  : list of str
+            Name(s) of the term.
         """
 
-        # Set the given name & synonyms as the erp label
+        # Set the given name & synonyms as the term label
         self.label = label
-        self.erp = erp
+        self.term = term
 
         # Initialize list to store pubmed article ids
         self.ids = list()
@@ -81,13 +81,13 @@ class Data(object):
 
 
     def __iter__(self):
-        """Iterate through extracted ERP papers."""
+        """Iterate through extracted term papers."""
 
         for ind in range(self.n_articles):
 
             yield {
                 'label': self.label,
-                'erp': self.erp,
+                'term': self.term,
                 'id': self.ids[ind],
                 'title': self.titles[ind],
                 'journal': self.journals[ind],
@@ -101,7 +101,7 @@ class Data(object):
 
 
     def add_id(self, new_id):
-        """Add a new ID to ERPWords object.
+        """Add a new ID to termWords object.
 
         Parameters
         ----------
@@ -113,7 +113,7 @@ class Data(object):
 
 
     def add_title(self, new_title):
-        """Add a new title to ERPWords object.
+        """Add a new title to termWords object.
 
         Parameters
         ----------
@@ -125,7 +125,7 @@ class Data(object):
 
 
     def add_authors(self, new_authors):
-        """Add a new set of authors to ERPWords object.
+        """Add a new set of authors to termWords object.
 
         Parameters
         ----------
@@ -138,7 +138,7 @@ class Data(object):
 
 
     def add_journal(self, new_journal, new_iso_abbrev):
-        """Add a new journal name and ISO abbreviation to ERPWords object.
+        """Add a new journal name and ISO abbreviation to termWords object.
 
         Parameters
         ----------
@@ -152,7 +152,7 @@ class Data(object):
 
 
     def add_words(self, new_words):
-        """Add new words to ERPWords object.
+        """Add new words to termWords object.
 
         Parameters
         ----------
@@ -164,7 +164,7 @@ class Data(object):
 
 
     def add_kws(self, new_kws):
-        """Add new keywords to ERPWords object.
+        """Add new keywords to termWords object.
 
         Parameters
         ----------
@@ -176,7 +176,7 @@ class Data(object):
 
 
     def add_pub_date(self, new_pub_date):
-        """Add publication date information to ERPWords object.
+        """Add publication date information to termWords object.
 
         Parameters
         ----------
@@ -189,7 +189,7 @@ class Data(object):
 
 
     def add_doi(self, new_doi):
-        """Add DOI to ERPWords object.
+        """Add DOI to termWords object.
 
         Parameters
         ----------
@@ -222,7 +222,7 @@ class Data(object):
 
             # If not, print out error
             self.update_history('Failed Check')
-            raise InconsistentDataError('ERP Words data is inconsistent.')
+            raise InconsistentDataError('term Words data is inconsistent.')
 
         # Update history
         self.update_history('Passed Check')

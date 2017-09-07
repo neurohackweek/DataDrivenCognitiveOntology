@@ -27,7 +27,7 @@ class SCDB(object):
         """Initialize SCDB object."""
 
         # Set base path for the project
-        self.project_path = ("/Users/tom/Desktop/Neurohackweek/DataDrivenCognitiveOntology/PROJECT/")
+        self.project_path = ("/Users/tom/Desktop/Neurohackweek/PROJECT/")
 
 
         # Initialize paths

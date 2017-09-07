@@ -1,4 +1,4 @@
-"""Classes and functions to store aggregated ERP paper data."""
+"""Classes and functions to store aggregated term paper data."""
 
 import json
 import nltk
@@ -16,14 +16,14 @@ EXCLUDE_KWS = []
 ##########################################################################################
 
 class DataAll(object):
-    """Object to hold ERP data, aggregated across papers.
+    """Object to hold term data, aggregated across papers.
 
     Attributes
     ----------
     label : str
-        Label for the current ERP.
-    erp : list of str
-        Name(s) of the ERP word data relates to.
+        Label for the current term.
+    term : list of str
+        Name(s) of the term word data relates to.
     n_articles : int
         Number of articles whos data is included in object.
     all_words : list of str
@@ -46,34 +46,34 @@ class DataAll(object):
         Summary / overview of data associated with current object.
     """
 
-    def __init__(self, erp_data):
+    def __init__(self, term_data):
         """Initialize DataAll() object."""
 
-        self.label = erp_data.label
-        self.erp = erp_data.erp
-        self.n_articles = erp_data.n_articles
+        self.label = term_data.label
+        self.term = term_data.term
+        self.n_articles = term_data.n_articles
 
         # Combine all articles into single list of all words
-        self.all_words = _combine(erp_data.words)
-        self.all_kws = _combine(erp_data.kws)
+        self.all_words = _combine(term_data.words)
+        self.all_kws = _combine(term_data.kws)
 
         # Convert lists of all words in frequency distributions
-        self.word_freqs = _freq_dist(self.all_words, self.erp + [self.label] + EXCLUDE_KWS)
-        self.kw_freqs = _freq_dist(self.all_kws, self.erp + [self.label] + EXCLUDE_KWS)
+        self.word_freqs = _freq_dist(self.all_words, self.term + [self.label] + EXCLUDE_KWS)
+        self.kw_freqs = _freq_dist(self.all_kws, self.term + [self.label] + EXCLUDE_KWS)
 
         # Get counts of authors, journals, years
-        self.author_counts = _proc_authors(erp_data.authors)
+        self.author_counts = _proc_authors(term_data.authors)
         self.f_author_counts, self.l_author_counts = \
-            _proc_end_authors(erp_data.authors)
-        self.journal_counts = _proc_journals(erp_data.journals)
-        self.year_counts = _proc_years(erp_data.years)
+            _proc_end_authors(term_data.authors)
+        self.journal_counts = _proc_journals(term_data.journals)
+        self.year_counts = _proc_years(term_data.years)
 
         # Initialize summary dictionary
         self.summary = dict()
 
 
     def check_words(self, n_check=20):
-        """Check the most common words for the ERP.
+        """Check the most common words for the term.
 
         Parameters
         ----------
@@ -85,7 +85,7 @@ class DataAll(object):
 
 
     def check_kws(self, n_check=20):
-        """Check the most common kws for the ERP.
+        """Check the most common kws for the term.
 
         Parameters
         ----------
@@ -97,7 +97,7 @@ class DataAll(object):
 
 
     def create_summary(self):
-        """Fill the summary dictionary of the current ERPs Words data."""
+        """Fill the summary dictionary of the current terms Words data."""
 
         # Add data to summary dictionary.
         self.summary['n_articles'] = str(self.n_articles)
@@ -108,18 +108,18 @@ class DataAll(object):
         self.summary['top_journal_count'] = str(self.journal_counts[0][0])
         self.summary['top_kws'] = [f[0] for f in self.kw_freqs.most_common()[0:5]]
         self.summary['first_publication'] = str(min([y[0] for y in self.year_counts]))
-        if self.label != str(self.erp[0]):
-            self.summary['name'] = str(self.erp[0])
+        if self.label != str(self.term[0]):
+            self.summary['name'] = str(self.term[0])
         else:
             self.summary['name'] = ''
 
 
     def print_summary(self):
-        """Print out a summary of the scraped ERP paper data."""
+        """Print out a summary of the scraped term paper data."""
 
         # Print out summary information
         print(self.label, ':')
-        print('  Full name of this ERP is: \t', self.summary['name'])
+        print('  Full name of this term is: \t', self.summary['name'])
         print('  Number of articles: \t\t', self.summary['n_articles'])
         print('  First publication: \t\t', self.summary['first_publication'])
         print('  Most common author: \t\t', self.summary['top_author_name'])
@@ -129,7 +129,7 @@ class DataAll(object):
 
 
     def save_summary(self, db=None):
-        """Save out a summary of the scraped ERP paper data."""
+        """Save out a summary of the scraped term paper data."""
 
         db = check_db(db)
 
@@ -157,7 +157,7 @@ def _check(freqs, n_check, label):
     if n_check > len(freqs):
         n_check = len(freqs)
 
-    # Get the requested number of most common kws for the ERP
+    # Get the requested number of most common kws for the term
     top = freqs.most_common()[0:n_check]
 
     # Join together the top words into a string
@@ -166,7 +166,7 @@ def _check(freqs, n_check, label):
         top_str += top[i][0]
         top_str += ' , '
 
-    # Print out the top words for the current ERP
+    # Print out the top words for the current term
     print("{:5} : ".format(label) + top_str)
 
 def _combine(in_lst):

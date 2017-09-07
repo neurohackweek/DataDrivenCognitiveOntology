@@ -1,4 +1,7 @@
-"""Classes and functions for Count analysis (key word co-occurences in papers)."""
+"""Classes and functions for Count analysis (key word co-occurences in papers).
+
+OLD FORMAT: BEING DEPRECATED.
+"""
 
 import datetime
 import numpy as np
