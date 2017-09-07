@@ -1,8 +1,8 @@
-"""Tests for Requestor functions and classes from erpsc.core."""
+"""Tests for Requestor functions and classes from lisc.core."""
 
 import time
 
-from erpsc.core.requester import Requester
+from lisc.core.requester import Requester
 
 ##################################################################################
 ##################################################################################

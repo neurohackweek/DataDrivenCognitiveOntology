@@ -1,12 +1,12 @@
-"""Tests for the IO functions from erpsc.core."""
+"""Tests for the IO functions from lisc.core."""
 
 from py.test import raises
 
-from erpsc.core.io import *
-from erpsc.count import Count
-from erpsc.words import Words
-from erpsc.core.errors import InconsistentDataError
-from erpsc.tests.utils import TestDB as TDB
+from lisc.core.io import *
+from lisc.count import Count
+from lisc.words import Words
+from lisc.core.errors import InconsistentDataError
+from lisc.tests.utils import TestDB as TDB
 
 ##################################################################################
 ##################################################################################

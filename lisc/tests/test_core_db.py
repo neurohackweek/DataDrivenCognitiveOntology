@@ -1,31 +1,31 @@
-"""Tests for the database classes and functions from erpsc.core."""
+"""Tests for the database classes and functions from lisc.core."""
 
 import os
 
-from erpsc.core.db import ERPDB, WebDB, check_db
+from lisc.core.db import SCDB, WebDB, check_db
 
 ##################################################################################
 ##################################################################################
 ##################################################################################
 
-def test_erpdb():
-    """Test the ERPDB object."""
+def test_SCDB():
+    """Test the SCDB object."""
 
-    # Check that ERPDB returns properly.
-    assert ERPDB(auto_gen=False)
+    # Check that SCDB returns properly.
+    assert SCDB(auto_gen=False)
 
-def test_erpdb_gen_paths():
-    """Check that gen_paths method of ERPDB."""
+def test_SCDB_gen_paths():
+    """Check that gen_paths method of SCDB."""
 
-    db = ERPDB(auto_gen=False)
+    db = SCDB(auto_gen=False)
     db.gen_paths()
 
     assert db
 
-def test_erpdb_paths():
-    """Test that all defined ERPDB paths exist."""
+def test_SCDB_paths():
+    """Test that all defined SCDB paths exist."""
 
-    db = ERPDB()
+    db = SCDB()
 
     # Loops through all paths, checking they exist
     #  Skips vars without '_path' marker, and empty variables
@@ -53,11 +53,11 @@ def test_webdb_paths():
 def test_check_db():
     """Test the check_db function."""
 
-    # Check that it returns an ERPDB when given None
+    # Check that it returns an SCDB when given None
     db = check_db(None)
-    assert isinstance(db, ERPDB)
+    assert isinstance(db, SCDB)
 
-    # Check that it returns an ERPDb object when given one
-    db = ERPDB()
+    # Check that it returns an SCDB object when given one
+    db = SCDB()
     db = check_db(db)
-    assert isinstance(db, ERPDB)
+    assert isinstance(db, SCDB)

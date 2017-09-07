@@ -5,9 +5,9 @@ import numpy as np
 from bs4 import BeautifulSoup
 
 # Import custom code
-from erpsc.base import Base
-from erpsc.core.utils import comb_terms, extract
-from erpsc.core.urls import URLS
+from lisc.base import Base
+from lisc.core.utils import comb_terms, extract
+from lisc.core.urls import URLS
 
 #################################################################################################
 #################################### ERPSC - COUNT - CLASSES ####################################
@@ -240,10 +240,6 @@ class Count(Base):
         """
 
         keep_inds = np.where(self.erp_counts > n)[0]
-
-        # TODO: take this out when update to scrape
-        # Specific fix to drop typo'd value from current scrape
-        keep_inds = np.delete(keep_inds, np.where(keep_inds == self.erps.index(['270'])))
 
         self.erps = [self.erps[i] for i in keep_inds]
         self.labels = [self.labels[i] for i in keep_inds]

@@ -1,12 +1,12 @@
-"""Load & save functions for ERP-SCANR."""
+"""Load & save functions for SCANR."""
 
 import os
 import pickle
 
-from erpsc.words import Words
-from erpsc.count import Count
-from erpsc.core.db import check_db
-from erpsc.core.errors import InconsistentDataError
+from lisc.words import Words
+from lisc.count import Count
+from lisc.core.db import check_db
+from lisc.core.errors import InconsistentDataError
 
 ##########################################################################################
 ##########################################################################################
@@ -53,14 +53,14 @@ def save_pickle_obj(obj, f_name, db=None):
 
 
 def load_pickle_obj(f_name, db=None):
-    """Load a custom object, from a pickle file, for ERP-SCANR project.
+    """Load a custom object, from a pickle file, for SCANR project.
 
     Parameters
     ----------
     f_name : str
         File name of the object to be loaded.
     db : ERPDB object, optional
-        Database object for the ERP-SCANR project.
+        Database object for the SCANR project.
     """
 
     # Check for database object, initialize if not provided

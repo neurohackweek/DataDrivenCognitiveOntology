@@ -1,15 +1,15 @@
-"""Base object for ERP-SCANR."""
+"""Base object for LISC."""
 
 import pkg_resources as pkg
 from bs4 import BeautifulSoup
 
-from erpsc.core.utils import extract
-from erpsc.core.requester import Requester
-from erpsc.core.errors import InconsistentDataError
+from lisc.core.utils import extract
+from lisc.core.requester import Requester
+from lisc.core.errors import InconsistentDataError
 
-######################################################################################
-############################### ERPSC - GENERAL - BASE ###############################
-######################################################################################
+#######################################################################################
+################################ LISC - GENERAL - BASE ################################
+#######################################################################################
 
 class Base(object):
     """Base class for ERPSC analyses.

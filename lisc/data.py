@@ -2,14 +2,14 @@
 
 import json
 
-from erpsc.core.db import check_db
-from erpsc.core.errors import InconsistentDataError
+from lisc.core.db import check_db
+from lisc.core.errors import InconsistentDataError
 
 ##################################################################################
 ################################ ERPSC - ERPWords ################################
 ##################################################################################
 
-class ERPData(object):
+class Data(object):
     """An object to hold the word results for a given ERP or term.
 
     Attributes

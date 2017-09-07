@@ -42,7 +42,7 @@ TODO:
   - Figure out 'HTTP POST' for large # of ID fetches
 """
 
-from erpsc.core.errors import InconsistentDataError
+from lisc.core.errors import InconsistentDataError
 
 ##########################################################################################
 ##########################################################################################

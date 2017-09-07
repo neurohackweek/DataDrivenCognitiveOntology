@@ -1,10 +1,10 @@
-"""Tests for the basic utilities functions from erpsc.core."""
+"""Tests for the basic utilities functions from lisc.core."""
 
 #from types import UnicodeType
 import bs4
 from py.test import raises
 
-from erpsc.core.utils import comb_terms, extract
+from lisc.core.utils import comb_terms, extract
 
 ##########################################################################
 ##########################################################################

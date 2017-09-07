@@ -6,10 +6,10 @@ import nltk
 from nltk.corpus import stopwords
 
 # Import custom code
-from erpsc.base import Base
-from erpsc.erp_data import ERPData
-from erpsc.core.urls import URLS
-from erpsc.core.utils import CatchNone, CatchNone2, comb_terms, extract
+from lisc.base import Base
+from lisc.data import Data
+from lisc.core.urls import URLS
+from lisc.core.utils import CatchNone, CatchNone2, comb_terms, extract
 
 #################################################################################################
 #################################### ERPSC - WORDS - Classes ####################################
@@ -22,7 +22,7 @@ class Words(Base):
     ----------
     result_keys : list of str
         Keys for each result data attached to object.
-    results : list of ERPData() objects
+    results : list of Data() objects
         Results for each ERP, stored in custom Words object.
     """
 
@@ -54,11 +54,11 @@ class Words(Base):
 
 
     def add_results(self, new_result):
-        """Add a new ERPData results object.
+        """Add a new Data results object.
 
         Parameters
         ----------
-        new_result : ERPData() object
+        new_result : Data() object
             Object with information about current ERP term.
         """
 
@@ -67,12 +67,12 @@ class Words(Base):
 
 
     @staticmethod
-    def extract_add_info(cur_erp, new_id, art):
+    def extract_add_info(cur_dat, new_id, art):
         """Extract information from article web page and add to
 
         Parameters
         ----------
-        cur_erp : ERPData() object
+        cur_dat : Data() object
             Object to store information for the current ERP term.
         new_id : int
             Paper ID of the new paper.
@@ -86,19 +86,19 @@ class Words(Base):
         """
 
         # Add ID of current article
-        cur_erp.add_id(new_id)
-        cur_erp.add_title(extract(art, 'ArticleTitle', 'str'))
-        cur_erp.add_authors(_process_authors(extract(art, 'AuthorList', 'raw')))
-        cur_erp.add_journal(extract(art, 'Title', 'str'), extract(art, 'ISOAbbreviation', 'str'))
-        cur_erp.add_words(_process_words(extract(art, 'AbstractText', 'str')))
-        cur_erp.add_kws(_process_kws(extract(art, 'Keyword', 'all')))
-        cur_erp.add_pub_date(_process_pub_date(extract(art, 'PubDate', 'raw')))
-        cur_erp.add_doi(_process_ids(extract(art, 'ArticleId', 'all'), 'doi'))
+        cur_dat.add_id(new_id)
+        cur_dat.add_title(extract(art, 'ArticleTitle', 'str'))
+        cur_dat.add_authors(_process_authors(extract(art, 'AuthorList', 'raw')))
+        cur_dat.add_journal(extract(art, 'Title', 'str'), extract(art, 'ISOAbbreviation', 'str'))
+        cur_dat.add_words(_process_words(extract(art, 'AbstractText', 'str')))
+        cur_dat.add_kws(_process_kws(extract(art, 'Keyword', 'all')))
+        cur_dat.add_pub_date(_process_pub_date(extract(art, 'PubDate', 'raw')))
+        cur_dat.add_doi(_process_ids(extract(art, 'ArticleId', 'all'), 'doi'))
 
-        # Increment number of articles included in ERPData
-        cur_erp.increment_n_articles()
+        # Increment number of articles included in Data
+        cur_dat.increment_n_articles()
 
-        return cur_erp
+        return cur_dat
 
 
     def scrape_data(self, db=None, retmax=None, use_hist=False, verbose=False):
@@ -142,7 +142,7 @@ class Words(Base):
             print('Scraping words for: ', lab)
 
             # Initiliaze object to store data for current erp papers
-            cur_erp = ERPData(lab, self.erps[ind])
+            cur_dat = Data(lab, self.erps[ind])
 
             # Set up search terms - add exclusions, if there are any
             if self.exclusions[ind][0]:
@@ -172,7 +172,7 @@ class Words(Base):
                 query_key = page_soup.find('querykey').text
 
                 # Update History
-                cur_erp.update_history('Start Scrape')
+                cur_dat.update_history('Start Scrape')
 
                 #
                 while ret_start < count:
@@ -193,8 +193,8 @@ class Words(Base):
                         new_id = _process_ids(extract(art, 'ArticleId', 'all'), 'pubmed')
                         #new_id = int(ids[ind].text)
 
-                        # Extract and add all relevant info from current articles to ERPData object
-                        cur_erp = self.extract_add_info(cur_erp, new_id, art)
+                        # Extract and add all relevant info from current articles to Data object
+                        cur_dat = self.extract_add_info(cur_dat, new_id, art)
 
                     #
                     ret_start += ret_max
@@ -217,7 +217,7 @@ class Words(Base):
                 articles = art_page_soup.findAll('PubmedArticle')
 
                 # Update History
-                cur_erp.update_history('Start Scrape')
+                cur_dat.update_history('Start Scrape')
 
                 # Loop through each article, extracting relevant information
                 for ind, art in enumerate(articles):
@@ -225,18 +225,18 @@ class Words(Base):
                     # Get ID of current article
                     new_id = int(ids[ind].text)
 
-                    # Extract and add all relevant info from current articles to ERPData object
-                    cur_erp = self.extract_add_info(cur_erp, new_id, art)
+                    # Extract and add all relevant info from current articles to Data object
+                    cur_dat = self.extract_add_info(cur_dat, new_id, art)
 
             # Check consistency of extracted results
-            cur_erp.check_results()
-            cur_erp.update_history('End Scrape')
+            cur_dat.check_results()
+            cur_dat.update_history('End Scrape')
 
             # Save out and clear data
-            cur_erp.save_n_clear()
+            cur_dat.save_n_clear()
 
             # Add the object with current erp data to results list
-            self.add_results(cur_erp)
+            self.add_results(cur_dat)
 
         # Set Requester object as finished being used
         self.req.close()

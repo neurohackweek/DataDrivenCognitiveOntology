@@ -1,9 +1,9 @@
-"""Tests for URL functions and classes from erpsc.core."""
+"""Tests for URL functions and classes from lisc.core."""
 
 from py.test import raises
 
-from erpsc.core.urls import URLS
-from erpsc.core.errors import InconsistentDataError
+from lisc.core.urls import URLS
+from lisc.core.errors import InconsistentDataError
 
 ##################################################################################
 ##################################################################################

@@ -3,32 +3,19 @@
 import json
 import nltk
 
-from erpsc.core.db import check_db
+from lisc.core.db import check_db
 
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
 
-EXCLUDE_KWS = [
-    'eeg',
-    'erp',
-    'erps',
-    'event-related potential',
-    'event-related potentials',
-    'event related potentials',
-    'event related-potentials (erps)',
-    'event-related potentials (erps)',
-    'potentials',
-    'electroencephalography',
-    'electroencephalography (eeg)',
-    'evoked'
-]
+EXCLUDE_KWS = []
 
 ##########################################################################################
 ##########################################################################################
 ##########################################################################################
 
-class ERPDataAll(object):
+class DataAll(object):
     """Object to hold ERP data, aggregated across papers.
 
     Attributes
@@ -60,7 +47,7 @@ class ERPDataAll(object):
     """
 
     def __init__(self, erp_data):
-        """Initialize ERPDataAll() object."""
+        """Initialize DataAll() object."""
 
         self.label = erp_data.label
         self.erp = erp_data.erp

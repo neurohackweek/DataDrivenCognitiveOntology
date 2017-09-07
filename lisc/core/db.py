@@ -6,8 +6,8 @@ import os
 ##################################################################################
 ##################################################################################
 
-class ERPDB(object):
-    """Class to hold database information for ERP-SCANR project.
+class SCDB(object):
+    """Class to hold database information for SCANR project.
 
     Attributes
     ----------
@@ -24,15 +24,11 @@ class ERPDB(object):
     """
 
     def __init__(self, auto_gen=True):
-        """Initialize ERPDB object."""
+        """Initialize SCDB object."""
 
         # Set base path for the project
-        self.project_path = ("/Users/tom/Documents/"
-                             "Research/1-Projects/ERP-SCANR/")
+        self.project_path = ("/Users/tom/Desktop/Neurohackweek/DataDrivenCognitiveOntology/PROJECT/")
 
-        # Set base path for the project - OLD LAPTOP
-        #self.project_path = ("/Users/thomasdonoghue/Documents/"
-        #                     "Research/1-Projects/ERP-SCANR/")
 
         # Initialize paths
         self.data_path = str()
@@ -49,8 +45,8 @@ class ERPDB(object):
         """Generate all the full paths for the ERP-SCANR project."""
 
         # Set the data path
-        self.data_path = os.path.join(self.project_path, '2-Data')
-        self.figs_path = os.path.join(self.project_path, '4-Figures')
+        self.data_path = os.path.join(self.project_path, 'Data')
+        self.figs_path = os.path.join(self.project_path, 'Figures')
 
         # Set paths to different data types
         self.counts_path = os.path.join(self.data_path, 'counts')
@@ -58,7 +54,7 @@ class ERPDB(object):
 
 
 class WebDB(object):
-    """Class to hold database information for ERP-SCANR Website.
+    """Class to hold database information for SCANR Website.
 
     Parameters
     ----------
@@ -76,8 +72,7 @@ class WebDB(object):
         """Initialize WebDB object."""
 
         # Set base path for the website
-        self.base_path = ("/Users/tom/Documents/"
-                          "GitCode/ERP_SCANR/docs")
+        self.base_path = ("")
 
         # Set base path for the website - OLD LAPTOP
         #self.base_path = ("/Users/thomasdonoghue/Documents/"
@@ -93,21 +88,21 @@ class WebDB(object):
 ##########################################################################################
 
 def check_db(db):
-    """Check if ERPDB object is initialized, if not, return an ERPDB object.
+    """Check if SCDB object is initialized, if not, return an SCDB object.
 
     Parameters
     ----------
-    db : ERPDB() object, or None
+    db : SCDB() object, or None
         Database object for ERP-SCANR project.
 
     Returns
     -------
-    db : ERPDB() object
+    db : SCDB() object
         Database object for ERP-SCANR project.
     """
 
-    # If db is currently None, initialize as ERPDB
+    # If db is currently None, initialize as SCDB
     if not db:
-        db = ERPDB()
+        db = SCDB()
 
     return db

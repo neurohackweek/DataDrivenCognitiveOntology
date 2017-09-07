@@ -1,8 +1,8 @@
-"""Tests for the Count() class and related functions from erpsc."""
+"""Tests for the Count() class and related functions from lisc."""
 
 import numpy as np
 
-from erpsc.count import Count
+from lisc.count import Count
 
 #######################################################################################
 ################################ TESTS - ERPSC - COUNT ################################

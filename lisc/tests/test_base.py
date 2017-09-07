@@ -1,16 +1,15 @@
-"""Tests for the Base Class from erpsc.
+"""Tests for the Base Class from lisc.
 
 NOTES
 -----
 - Load from file method '_file' are only tested for default (from module) loads.
 """
 
-#from types import StringType, ListType
 from py.test import raises
 
-from erpsc.base import Base, _check_type, _terms_load_file
-from erpsc.tests.utils import load_base
-from erpsc.core.errors import InconsistentDataError
+from lisc.base import Base, _check_type, _terms_load_file
+from lisc.tests.utils import load_base
+from lisc.core.errors import InconsistentDataError
 
 #######################################################################################
 ###################### TESTS - ERPSC - BASE - PRIVATE FUNCTIONS  ######################
@@ -20,29 +19,25 @@ def test_check_type():
     """Test that the _check_type function works properly."""
 
     out = _check_type('string')
-    #assert isinstance(out, ListType)
     assert isinstance(out, list)
 
     out = _check_type(['list'])
-    #assert isinstance(out, ListType)
     assert isinstance(out, list)
 
 def test_terms_load_file():
     """Test that the _terms_load_file function returns properly."""
 
-    erp_dat = _terms_load_file('erps')
-    cog_terms_dat = _terms_load_file('cognitive')
-    dis_terms_dat = _terms_load_file('disease')
-    excl_dat = _terms_load_file('erps_exclude')
+    dat = _terms_load_file('test')
+    cog_terms_dat = _terms_load_file('test')
+    dis_terms_dat = _terms_load_file('test')
+    excl_dat = _terms_load_file('test')
 
-    all_dat = [erp_dat, cog_terms_dat, dis_terms_dat, excl_dat]
+    all_dat = [dat, cog_terms_dat, dis_terms_dat, excl_dat]
 
     for dat in all_dat:
         assert dat
         assert isinstance(dat, list)
         assert isinstance(dat[0], str)
-        #assert isinstance(dat, ListType)
-        #assert isinstance(dat[0], StringType)
 
 ########################################################################################
 ############################ TESTS - ERPSC - GENERAL - BASE ############################

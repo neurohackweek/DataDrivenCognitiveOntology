@@ -1,4 +1,4 @@
-"""Tests for the Words() class and related functions from erpsc."""
+"""Tests for the Words() class and related functions from lisc."""
 
 from py.test import raises
 
@@ -6,10 +6,10 @@ import requests
 import bs4
 from bs4 import BeautifulSoup
 
-from erpsc.erp_data import ERPData
-from erpsc.words import Words
-from erpsc.words import _ids_to_str, _process_words, _process_kws
-from erpsc.words import _process_authors, _process_pub_date, _process_ids
+from lisc.data import Data
+from lisc.words import Words
+from lisc.words import _ids_to_str, _process_words, _process_kws
+from lisc.words import _process_authors, _process_pub_date, _process_ids
 
 #######################################################################################
 ################################ TESTS - ERPSC - WORDS ################################
@@ -29,7 +29,7 @@ def test_get_item():
     with raises(IndexError):
         words['not a thing']
 
-    words.add_results(ERPData('test', ['test']))
+    words.add_results(Data('test', ['test']))
 
     # Test error for wrong key
     with raises(IndexError):
@@ -43,7 +43,7 @@ def test_add_results():
 
     words = Words()
 
-    words.add_results(ERPData(['test']))
+    words.add_results(Data(['test']))
 
     assert words.results
 
@@ -53,7 +53,7 @@ def test_extract_add_info():
     words = Words()
 
     # Check page with all fields defined - check data extraction
-    erp_word = ERPData('test')
+    erp_word = Data('test')
     page = requests.get(("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/"
                          "efetch.fcgi?&db=pubmed&retmode=xml&id=28000963"))
     page_soup = BeautifulSoup(page.content, "xml")
