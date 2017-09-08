@@ -2,7 +2,7 @@
 
 This is a text mining project that uses automatic web scraping of relevant literature given terms of interest from the Cognitive Atlas (Poldrack et al., 2011). It includes a few tools from natural language processing to analyse and visualize the resulting corpus of literature. 
 
-Contributors: Tom Donoghue, Ayala Allon, Basak Kilic, Eric Reavis, Mengya Zhang, Juliet Shafgo, Nicole Roberts, Vassiki Chauhan
+Contributors: Tom Donoghue, Ayala Allon, Basak Kilic, Eric Reavis, Mengya Zhang, Juliet Shafto, Nicole Roberts, Vassiki Chauhan
 
 https://github.com/neurohackweek/DataDrivenCognitiveOntology
 
@@ -10,7 +10,7 @@ https://github.com/neurohackweek/DataDrivenCognitiveOntology
 
 The Cognitive Atlas was developed in order to facilitate knowledge integration and collaboration in the field of cognitive neuroscience. Specifically, it aimed to provide a foundation that could resolve the ambiguous terminology and clarify the distinction between contructs and tasks within the rapidly expanding corpus of cognitive neuroscience research (Poldrack, 2011).
 
-In the six years since it was launched, the Cognitive Atlas has proven to be a successful respository for defining a wide variety of psychological constructs. This includes 806 concepts, 740 tasks, and 220 disorders. However, its goal to map the relationships between these many conceptual units has been less thoroughly achieved. Only [?] relationships have been described, and of the 1766 total constructs, [?] of them have no defined relationships at all. The most recent user contribution was [?] years ago.
+In the six years since it was launched, the Cognitive Atlas has proven to be a successful respository for defining a wide variety of psychological constructs. This includes 803 concepts, 740 tasks, and 220 disorders. However, its goal to map the relationships between these many conceptual units has been less thoroughly achieved. Fewer than 20% of the concepts represent more than 70% of the defined relationships, and nearly half of the concepts aren't connected to anything at all. Only 53 users have ever contributed constructs or definitions.
 
 We aim to build on the existing structure of the Cognitive Atlas using a data-driven, rather than crowd-sourced methodology. Specifically, we will extract cooccurrences from the PubMed database in order to link related constructs. The use of crowd-sourcing was important to create a meaningful basic structure that was not available using search terms or keywords alone. However, this approach is limited by the willingness and availability of experts to contribute. Moreover, the literature is constantly changing as new findings are published. Constructs and tasks may be applied to novel questions, leading to a rapid evolution of the underlying cognitive ontology.
 
