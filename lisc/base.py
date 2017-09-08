@@ -32,6 +32,8 @@ class Base(object):
         Object to handle URL requests.
     date : str
         Date data was collected.
+    has_dat : bool
+        Whether there is any terms and/or data loaded.
     """
 
     def __init__(self):
@@ -47,6 +49,7 @@ class Base(object):
         self.terms = list()
         self.labels = list()
         self.exclusions = list()
+        self.has_dat = False
 
         # Initialize counters for numbers of terms
         self.n_terms = int()
@@ -73,9 +76,11 @@ class Base(object):
         # Set given list as the terms
         for term in terms:
             self.terms.append(_check_type(term))
+        self.get_term_labels()
 
         # Set the number of terms
         self.n_terms = len(terms)
+        self.has_dat = True
 
 
     def set_terms_file(self, terms_f_name):
@@ -90,9 +95,10 @@ class Base(object):
         # Set the number of terms
         self.n_terms = len(terms)
 
-        # Set as list, and attach to object
+        # Set as list, attach to object, set labels
         for i in range(self.n_terms):
             self.terms.append(terms[i][:].split(','))
+        self.get_term_labels()
 
 
     def check_terms(self):
@@ -117,11 +123,13 @@ class Base(object):
             self.terms = list()
             self.n_terms = int()
 
+        self.has_dat = False
+
 
     def get_term_labels(self):
         """Get term labels."""
 
-        self.term_labels = [term[-1] for term in self.terms]
+        self.labels = [term[0] for term in self.terms]
 
 
     def set_exclusions(self, exclusions):
@@ -184,28 +192,6 @@ class Base(object):
             # Reset exclusions variables to empty
             self.exclusions = list()
 
-
-    def get_db_info(self, info_url):
-        """Calls EInfo to get info and status of db to be used for scraping.
-
-        Parameters
-        ----------
-        info_url : str
-            URL to request db information from.
-        """
-
-        # Get the info page and parse with BeautifulSoup
-        info_page = self.req.get_url(info_url)
-        info_page_soup = BeautifulSoup(info_page.content, 'lxml')
-
-        # Set list of fields to extract from eInfo
-        fields = ['dbname', 'menuname', 'description', 'dbbuild', 'count', 'lastupdate']
-
-        # Extract basic infomation into a dictionary
-        for field in fields:
-            self.db_info[field] = extract(info_page_soup, field, 'str')
-
-##########################################################################################
 ##########################################################################################
 ##########################################################################################
 

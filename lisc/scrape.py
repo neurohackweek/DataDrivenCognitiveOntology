@@ -14,7 +14,7 @@ from lisc.core.requester import Requester
 ##############################################################################################################
 ##############################################################################################################
 
-def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='pubmed', verbose=False):
+def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], db='pubmed', verbose=False):
     """Search through pubmed for all abstracts for co-occurence.
 
     Parameters
@@ -61,7 +61,7 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
     n_terms_a = len(terms_lst_a)
     if len(terms_lst_b) == 0:
 	    terms_lst_b = terms_lst_a
-	    excl_lst_b = excl_lst_a
+	    excls_lst_b = excls_lst_a
     n_terms_b = len(terms_lst_b)
 
     # Initialize vectors of counts for each term independently
@@ -95,7 +95,7 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
 
         # Get number of results for current term search
         url = urls.search + _mk(terms_lst_a[a_ind]) + \
-              _mk(excl_lst_a[a_ind], 'NOT')
+              _mk(excls_lst_a[a_ind], 'NOT')
         term_a_counts[a_ind] = _get_count(req, url)
 
         # Loop through each term (list-b)
@@ -106,14 +106,14 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
 
             # Get number of results for just term search
             url = urls.search + _mk(terms_lst_b[b_ind]) + \
-            	_mk(excl_lst_b[b_ind], 'NOT')
+            	_mk(excls_lst_b[b_ind], 'NOT')
             term_b_counts[b_ind] = _get_count(req, url)
 
             # Make URL - Exact Term Version, using double quotes, & exclusions
             url = urls.search + _mk(terms_lst_a[a_ind]) + \
-                    _mk(excl_lst_a[a_ind], 'NOT') + \
+                    _mk(excls_lst_a[a_ind], 'NOT') + \
                     _mk(terms_lst_b[b_ind], 'AND') + \
-                    _mk(excl_lst_b[b_ind], 'NOT')
+                    _mk(excls_lst_b[b_ind], 'NOT')
 
             count = _get_count(req, url)
             dat_numbers[a_ind, b_ind] = count
@@ -122,10 +122,10 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
     # Set Requester object as finished being used
     req.close()
 
-    return dat_numbers, dat_percent
+    return dat_numbers, dat_percent, term_a_counts, term_b_counts
 
 
-def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=False, verbose=False):
+def scrape_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=False, verbose=False):
     """Search through pubmed for all abstracts referring to a given term, pull, and save that data.
 
     Parameters
