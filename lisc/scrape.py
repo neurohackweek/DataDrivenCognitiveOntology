@@ -6,9 +6,6 @@ from bs4 import BeautifulSoup
 import nltk
 from nltk.corpus import stopwords
 
-import sys
-sys.path.append('/Users/tom/Desktop/Neurohackweek/PROJECT/DataDrivenCognitiveOntology/')
-
 from lisc.core.utils import comb_terms, extract, CatchNone, CatchNone2
 from lisc.data import Data
 from lisc.core.urls import URLS
@@ -37,6 +34,11 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
 
     Returns
     -------
+    dat_numbers :
+        xx
+    dat_percent :
+        xx
+
 
     The scraping does an exact word search for two terms.
 
@@ -62,11 +64,11 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
 	    excl_lst_b = excl_lst_a
     n_terms_b = len(terms_lst_b)
 
-    #
+    # Initialize vectors of counts for each term independently
     terms_a_counts = np.zeros([n_terms_a])
     terms_b_counts = np.zeros([n_terms_b])
 
-    #
+    # Initialize matrices to store co-occurence data
     dat_numbers = np.zeros([n_terms_a, n_terms_b])
     dat_percent = np.zeros([n_terms_a, n_terms_b])
 
@@ -81,10 +83,10 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
     dat_numbers = np.zeros([n_terms_a, n_terms_b], dtype=int)
     dat_percent = np.zeros([n_terms_a, n_terms_b])
 
-    # Loop through each ERP term
+    # Loop through each term (list-A)
     for term_a in terms_lst_a:
 
-        # Get the index of the current erp
+        # Get the index of the current term
         a_ind = terms_lst_a.index(term_a)
 
         # Print out status
@@ -96,7 +98,7 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
               _mk(excl_lst_a[a_ind], 'NOT')
         term_a_counts[a_ind] = _get_count(req, url)
 
-        # For each ERP, loop through each term term
+        # Loop through each term (list-b)
         for term_b in terms_lst_b:
 
             # Get the indices of the current term
@@ -112,7 +114,6 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
                     _mk(excl_lst_a[a_ind], 'NOT') + \
                     _mk(terms_lst_b[b_ind], 'AND') + \
                     _mk(excl_lst_b[b_ind], 'NOT')
-            print(url)
 
             count = _get_count(req, url)
             dat_numbers[a_ind, b_ind] = count
@@ -125,24 +126,38 @@ def scrape_cooc(terms_lst_a, terms_lst_b=[], excl_lst_a=[], excl_lst_b=[], db='p
 
 
 def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=False, verbose=False):
-    """Search through pubmed for all abstracts referring to a given ERP.
+    """Search through pubmed for all abstracts referring to a given term, pull, and save that data.
 
-    The scraping does an exact word search for the ERP term given.
-    It then loops through all the artciles found about that data.
-    For each article, pulls title, year and word data.
+    Parameters
+    ----------
+    terms : list of list of str
+        xx
+    labels : list of str
+        xx
+    exclusions : list of list of str
+        xx
+    db : str, optional (default: 'pubmed')
+        xx
+    retmax : int, optional
+        xx
+    use_hist : bool, optional (default: False)
+        xx
+    verbose : bool, optional (default: False)
+        xx
+
+    Returns
+    -------
+    ??
 
     Notes
     -----
-    - Pulls data using the hierarchical tag structure that organize the articles.
-    - Initially, the procedure was to pull all tags of a certain type.
-        For example: extract all 'DateCreated' tags.
-        This procedure fails (or badly organizes data) when an articles is
-            missing a particular tag.
-        Now: take advantage of the hierarchy, loop through each article tag.
-            From here, pull out the data, if available.
-            This way, can deal with cases of missing data.
+    The scraping does an exact word search for the term given.
+    It then loops through all the articles found about that data.
+    For each article, pulls and saves out data (including title, abstract, authors, etc)
+        Pulls data using the hierarchical tag structure that organize the articles.
+        This procedure loops through each article tag.
 
-    NOTE: retmax currently not used when use_hist is True (will scrape all)
+    NOTE: retmax currently not used when use_hist is True (will scrape all). Problem?
     """
 
     # Requester object
@@ -161,14 +176,14 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
     # Get current information about database being used
     db_info = _get_db_info(req, urls.info)
 
-    # Loop through all the erps
+    # Loop through all the terms
     for ind, lab in enumerate(labels):
 
         # Print out status
         if verbose:
             print('Scraping words for: ', lab)
 
-        # Initiliaze object to store data for current erp papers
+        # Initiliaze object to store data for current term papers
         cur_dat = Data(lab, terms[ind])
 
         # Set up search terms - add exclusions, if there are any
@@ -177,8 +192,11 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
         else:
             term_arg = comb_terms(terms[ind], 'or')
 
-        # Create the url for the erp search term
+        # Create the url for the search term
         url = urls.search + term_arg
+
+        # Update History
+        cur_dat.update_history('Start Scrape')
 
         # Get page and parse
         page = req.get_url(url)
@@ -196,31 +214,13 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
             web_env = page_soup.find('webenv').text
             query_key = page_soup.find('querykey').text
 
-            # Update History
-            cur_dat.update_history('Start Scrape')
-
             #
             while ret_start < count:
 
-                #
+                # Get article page, scrape data, update position
                 art_url = urls.fetch + '&WebEnv=' + web_env + '&query_key=' + query_key + \
                           '&retstart=' + str(ret_start) + '&retmax=' + str(ret_max)
-                art_page = req.get_url(art_url)
-                art_page_soup = BeautifulSoup(art_page.content, "xml")
-
-                # Pull out articles
-                articles = art_page_soup.findAll('PubmedArticle')
-
-                # Loop through each article, extracting relevant information
-                for ind, art in enumerate(articles):
-
-                    # Get ID of current article
-                    new_id = _process_ids(extract(art, 'ArticleId', 'all'), 'pubmed')
-
-                    # Extract and add all relevant info from current articles to Data object
-                    cur_dat = _extract_add_info(cur_dat, new_id, art)
-
-                #
+                cur_dat = _scrape_papers(req, art_url, cur_dat)
                 ret_start += ret_max
 
         # Without using history
@@ -232,25 +232,9 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
             # Convert ids to string
             ids_str = _ids_to_str(ids)
 
-            # Get article page
+            # Get article page & scrape data
             art_url = urls.fetch + '&id=' + ids_str
-            art_page = req.get_url(art_url)
-            art_page_soup = BeautifulSoup(art_page.content, "xml")
-
-            # Pull out articles
-            articles = art_page_soup.findAll('PubmedArticle')
-
-            # Update History
-            cur_dat.update_history('Start Scrape')
-
-            # Loop through each article, extracting relevant information
-            for ind, art in enumerate(articles):
-
-                # Get ID of current article
-                new_id = int(ids[ind].text)
-
-                # Extract and add all relevant info from current articles to Data object
-                cur_dat = _extract_add_info(cur_dat, new_id, art)
+            cur_dat = _scrape_papers(req, art_url, cur_dat)
 
         # Check consistency of extracted results
         cur_dat.check_results()
@@ -261,7 +245,6 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
 
     # Set Requester object as finished being used
     req.close()
-
 
 ##############################################################################################################
 ##############################################################################################################
@@ -295,6 +278,41 @@ def _get_db_info(req, info_url):
     return db_info
 
 
+def _scrape_papers(req, art_url, cur_dat):
+    """
+
+    Parameters
+    ----------
+    req :
+        xx
+    art_url :
+        xx
+
+    Returns
+    -------
+    cur_dat :
+        xx
+    """
+
+    # Get page of all articles
+    art_page = req.get_url(art_url)
+    art_page_soup = BeautifulSoup(art_page.content, "xml")
+
+    # Pull out articles
+    articles = art_page_soup.findAll('PubmedArticle')
+
+    # Loop through each article, extracting relevant information
+    for ind, art in enumerate(articles):
+
+        # Get ID of current article
+        new_id = _process_ids(extract(art, 'ArticleId', 'all'), 'pubmed')
+
+        # Extract and add all relevant info from current articles to Data object
+        cur_dat = _extract_add_info(cur_dat, new_id, art)
+
+    return cur_dat
+
+
 def _get_count(req, url):
     """Get the count of how many articles listed on search results URL.
 
@@ -324,7 +342,7 @@ def _mk(t_lst, cm=''):
 
 
 #######################################################################################################
-################################# ERPSC - WORDS - FUNCTIONS (PRIVATE) #################################
+################################# LISC - WORDS - FUNCTIONS (PRIVATE) #################################
 #######################################################################################################
 
 def _extract_add_info(cur_dat, new_id, art):
@@ -333,16 +351,21 @@ def _extract_add_info(cur_dat, new_id, art):
     Parameters
     ----------
     cur_dat : Data() object
-        Object to store information for the current ERP term.
+        Object to store information for the current term.
     new_id : int
         Paper ID of the new paper.
     art : bs4.element.Tag() object
         Extracted pubmed article.
 
+    Returns
+    -------
+    cur_dat : ?
+        xx
+
     NOTES
     -----
-    - Data extraction is all in try/except statements in order to
-    deal with missing data, since fields may be missing.
+    Data extraction is all in try/except statements in order to
+        deal with missing data, since fields may be missing.
     """
 
     # Add ID of current article
@@ -427,9 +450,7 @@ def _process_kws(keywords):
         List of all the keywords.
     """
 
-    # NOTE: UPDATE WITH MOVE TO PY35
     return [kw.text.lower() for kw in keywords]
-    #return [kw.text.encode('ascii', 'ignore') for kw in keywords]
 
 
 @CatchNone
@@ -480,7 +501,7 @@ def _process_pub_date(pub_date):
 
     # Extract year, convert to int if not None
     year = extract(pub_date, 'Year', 'str')
-    if year: year = int(year)
+    year = int(year) if year else year
 
     # Extract month
     month = extract(pub_date, 'Month', 'str')
@@ -505,6 +526,7 @@ def _process_ids(ids, id_type):
 
     lst = [str(i.contents[0]) for i in ids if i.attrs == {'IdType' : id_type}]
 
-    if lst == []: return None
-    else: return lst[0]
+    #if lst == []: return None
+    #else: return lst[0]
 
+    return None if not lst else lst

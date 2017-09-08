@@ -1,4 +1,4 @@
-"""Database structure object for the ERP-SCANR project."""
+"""Database structure object for the LISC project."""
 
 import os
 
@@ -27,7 +27,7 @@ class SCDB(object):
         """Initialize SCDB object."""
 
         # Set base path for the project
-        self.project_path = ("/Users/tom/Desktop/Neurohackweek/PROJECT/")
+        self.project_path = ("/Users/tom/Desktop/PROJECT/")
 
 
         # Initialize paths
@@ -74,14 +74,10 @@ class WebDB(object):
         # Set base path for the website
         self.base_path = ("")
 
-        # Set base path for the website - OLD LAPTOP
-        #self.base_path = ("/Users/thomasdonoghue/Documents/"
-        #                     "GitCode/ERP_SCANR/docs")
-
         # Set paths to directories for the website
         self.post_path = os.path.join(self.base_path, '_posts')
         self.dat_path = os.path.join(self.base_path, '_data')
-        self.plt_path = os.path.join(self.base_path, 'assets/ERPs')
+        self.plt_path = os.path.join(self.base_path, 'assets/TERMs')
 
 ##########################################################################################
 ##########################################################################################
@@ -93,16 +89,13 @@ def check_db(db):
     Parameters
     ----------
     db : SCDB() object, or None
-        Database object for ERP-SCANR project.
+        Database object for LISC project.
 
     Returns
     -------
     db : SCDB() object
-        Database object for ERP-SCANR project.
+        Database object for LISC project.
     """
 
     # If db is currently None, initialize as SCDB
-    if not db:
-        db = SCDB()
-
-    return db
+    return SCDB() if not db else db
