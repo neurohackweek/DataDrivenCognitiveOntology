@@ -2,6 +2,7 @@
 
 # Import custom code
 from lisc.base import Base
+from lisc.scrape import scrape_words
 
 ################################################################################################
 #################################### LISC - WORDS - Classes ####################################
@@ -30,7 +31,13 @@ class Words(Base):
 
 
     def __getitem__(self, key):
-        """Index into Words object with ERP result key."""
+        """Index into Words object with ERP result key.
+
+        Parameters
+        ----------
+        key : str
+            xx
+        """
 
         # Give up if object is empty
         if len(self.result_keys) == 0:
@@ -56,3 +63,11 @@ class Words(Base):
 
         self.result_keys.append(new_result.label)
         self.results.append(new_result)
+
+
+    def run_scrape(self, db='pubmed', retmax=None, use_hist=False, verbose=False):
+        """Launch a scrape of words data."""
+
+        self.results, self.meta_dat = scrape_words(self.terms, self.exclusions, db=db,
+                                                   retmax=retmax, use_hist=use_hist, verbose=verbose)
+        self.results_keys = [dat.label for dat in self.results]

@@ -59,7 +59,7 @@ class Count(object):
         # Run single list of terms against themselves
         if not self.terms['B'].has_dat:
             print('RUNNING A by A')
-            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts = \
+            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts, self.meta_dat = \
                 scrape_counts(
                     terms_lst_a = self.terms['A'].terms,
                     excls_lst_a = self.terms['A'].exclusions,
@@ -67,7 +67,7 @@ class Count(object):
 
         # Run two different sets of terms
         else:
-            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts = \
+            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts, self.meta_dat = \
                 scrape_counts(
                     terms_lst_a = self.terms['A'].terms,
                     excls_lst_a = self.terms['A'].exclusions,
@@ -127,7 +127,7 @@ class Count(object):
         keep_inds = np.where(self.terms[dim].counts > n)[0]
 
         self.terms[dim].terms = [self.terms[dim].terms[i] for i in keep_inds]
-        self.terms[dim].labels = [self.terms[dim]labels[i] for i in keep_inds]
+        self.terms[dim].labels = [self.terms[dim].labels[i] for i in keep_inds]
         self.terms[dim].counts = self.terms[dim].counts[keep_inds]
 
         self.terms[dim].n_terms = len(self.terms[dim].terms)

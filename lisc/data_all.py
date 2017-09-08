@@ -47,7 +47,13 @@ class DataAll(object):
     """
 
     def __init__(self, term_data):
-        """Initialize DataAll() object."""
+        """Initialize DataAll() object.
+
+        Parameters
+        ----------
+        term_data : Data() object
+            xx
+        """
 
         self.label = term_data.label
         self.term = term_data.term
@@ -169,6 +175,7 @@ def _check(freqs, n_check, label):
     # Print out the top words for the current term
     print("{:5} : ".format(label) + top_str)
 
+
 def _combine(in_lst):
     """Combine list of lists into one large list.
 
@@ -190,6 +197,7 @@ def _combine(in_lst):
             out.extend(in_lst[ind])
 
     return out
+
 
 def _freq_dist(in_lst, exclude):
     """Create frequency distribution.
@@ -217,6 +225,7 @@ def _freq_dist(in_lst, exclude):
 
     return freqs
 
+
 def _proc_years(year_lst):
     """Process years.
 
@@ -235,6 +244,7 @@ def _proc_years(year_lst):
     counts.sort()
 
     return counts
+
 
 def _proc_journals(j_lst):
     """Process journals.
@@ -260,6 +270,7 @@ def _proc_journals(j_lst):
     counts.sort(reverse=True)
 
     return counts
+
 
 def _proc_authors(a_lst):
     """Process all authors.
@@ -293,6 +304,7 @@ def _proc_authors(a_lst):
     # Count how often each author published
     return _count(_fix_names(names))
 
+
 def _proc_end_authors(a_lst):
     """Process first and last authors only.
 
@@ -323,6 +335,7 @@ def _proc_end_authors(a_lst):
 
     return f_counts, l_counts
 
+
 def _fix_names(names):
     """Fix author names.
 
@@ -352,6 +365,7 @@ def _fix_names(names):
     #         if name[1] is None else name for name in names]
 
     return names
+
 
 def _count(d_lst):
     """Count occurences of each item in a list.

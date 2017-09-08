@@ -4,7 +4,7 @@ import pkg_resources as pkg
 from bs4 import BeautifulSoup
 
 from lisc.core.utils import extract
-from lisc.core.requester import Requester
+#from lisc.core.requester import Requester
 from lisc.core.errors import InconsistentDataError
 
 #######################################################################################
@@ -32,6 +32,8 @@ class Base(object):
         Object to handle URL requests.
     date : str
         Date data was collected.
+    meta_dat : dict
+        Meta data for the scrape.
     has_dat : bool
         Whether there is any terms and/or data loaded.
     """
@@ -40,7 +42,7 @@ class Base(object):
         """Initialize ERP-SCANR Base() object."""
 
         # Initialize dictionary to store db info
-        self.db_info = dict()
+        #self.db_info = dict()
 
         # Initialize variable to keep track of term type used
         self.terms_type = str()
@@ -55,10 +57,10 @@ class Base(object):
         self.n_terms = int()
 
         # Requester object for handling URL calls
-        self.req = Requester()
+        #self.req = Requester()
 
         # Initialize for date that data is collected
-        self.date = str()
+        #self.date = str()
 
 
     def set_terms(self, terms):

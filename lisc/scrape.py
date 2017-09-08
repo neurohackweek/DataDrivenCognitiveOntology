@@ -46,11 +46,13 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     This field contains the number of papers with both terms. This is extracted.
     """
 
+    meta_dat = dict()
+
     # Requester object
     req = Requester()
 
     # Set date of when data was scraped
-    date = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    meta_dat['date'] = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     # Get e-utils URLS object. Set retmax as 0, since not using UIDs in this analysis
     urls = URLS(db=db, retmax='0', retmode='xml', field='TIAB')
@@ -73,7 +75,7 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     dat_percent = np.zeros([n_terms_a, n_terms_b])
 
     # Get current information about database being used
-    db_info = _get_db_info(req, urls.info)
+    meta_dat['db_info'] = _get_db_info(req, urls.info)
 
     # Initialize count variables to the correct length
     term_a_counts = np.zeros([n_terms_a])
@@ -121,20 +123,19 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
 
     # Set Requester object as finished being used
     req.close()
+    meta_dat['req'] = req
 
-    return dat_numbers, dat_percent, term_a_counts, term_b_counts
+    return dat_numbers, dat_percent, term_a_counts, term_b_counts, meta_dat
 
 
-def scrape_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=False, verbose=False):
+def scrape_words(terms_lst, exclusions_lst, db='pubmed', retmax=None, use_hist=False, verbose=False):
     """Search through pubmed for all abstracts referring to a given term, pull, and save that data.
 
     Parameters
     ----------
-    terms : list of list of str
+    terms_lst : list of list of str
         xx
-    labels : list of str
-        xx
-    exclusions : list of list of str
+    exclusions_lst : list of list of str
         xx
     db : str, optional (default: 'pubmed')
         xx
@@ -160,11 +161,14 @@ def scrape_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=F
     NOTE: retmax currently not used when use_hist is True (will scrape all). Problem?
     """
 
+    results = []
+    meta_dat = dict()
+
     # Requester object
     req = Requester()
 
     # Set date of when data was collected
-    date = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
+    meta_dat['date'] = datetime.datetime.now().strftime("%Y-%m-%d_%H:%M:%S")
 
     # Get e-utils URLS object
     hist_val = 'y' if use_hist else 'n'
@@ -174,23 +178,23 @@ def scrape_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=F
     urls.build_fetch(['db', 'retmode'])
 
     # Get current information about database being used
-    db_info = _get_db_info(req, urls.info)
+    meta_dat['db_info'] = _get_db_info(req, urls.info)
 
     # Loop through all the terms
-    for ind, lab in enumerate(labels):
+    for ind, terms in enumerate(terms_lst):
 
         # Print out status
         if verbose:
-            print('Scraping words for: ', lab)
+            print('Scraping words for: ', terms[0])
 
         # Initiliaze object to store data for current term papers
-        cur_dat = Data(lab, terms[ind])
+        cur_dat = Data(terms[0], terms)
 
         # Set up search terms - add exclusions, if there are any
-        if exclusions[ind][0]:
-            term_arg = comb_terms(terms[ind], 'or') + comb_terms(exclusions[ind], 'not')
+        if exclusions_lst[ind][0]:
+            term_arg = comb_terms(terms, 'or') + comb_terms(exclusions_lst[ind], 'not')
         else:
-            term_arg = comb_terms(terms[ind], 'or')
+            term_arg = comb_terms(terms, 'or')
 
         # Create the url for the search term
         url = urls.search + term_arg
@@ -242,9 +246,13 @@ def scrape_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hist=F
 
         # Save out and clear data
         cur_dat.save_n_clear()
+        results.append(cur_dat)
 
     # Set Requester object as finished being used
     req.close()
+    meta_dat['req'] = req
+
+    return results, meta_dat
 
 ##############################################################################################################
 ##############################################################################################################
@@ -525,8 +533,5 @@ def _process_ids(ids, id_type):
     """
 
     lst = [str(i.contents[0]) for i in ids if i.attrs == {'IdType' : id_type}]
-
-    #if lst == []: return None
-    #else: return lst[0]
 
     return None if not lst else lst
