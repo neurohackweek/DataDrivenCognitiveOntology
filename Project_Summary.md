@@ -21,6 +21,6 @@ Beyond simply populating the existing Cognitive Atlas, there may be a wide varie
 ## Possible future extensions:
 * How have important concepts in Cognitive Neuroscience changed over time (i.e. does restricting the range of years change the associations with a given concept)?
 * Do different literatures (e.g. human neuroscience vs. primate research) use terminology differently?
-* Can we connect this to ERP-Scanr or Neurosynth?
+* Can we connect this to ERP-Scanr or Neurosynth (i.e. brain/concept mapping)?
 * Could we identify superficially distinct topics from disparate areas that may have underlying similarity?
 * More broadly, could we make a tool for others to easily and flexibly explore their own questions (comparing subsets of the literature, etc)?
