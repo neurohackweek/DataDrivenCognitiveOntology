@@ -13,16 +13,16 @@ from lisc.core.errors import InconsistentDataError
 ##########################################################################################
 
 def save_pickle_obj(obj, f_name, db=None):
-    """Save a custom object from ERP-SCANR as a pickle file.
+    """Save a custom object from LISC as a pickle file.
 
     Parameters
     ----------
     obj : {Counts() object, Words() object}
-        ERP-SCANR custom object to save out.
+        LISC custom object to save out.
     f_name : str
         Name to append to saved out file name.
-    db : ERPDB() object, optional
-        Database object for the ERP-SCANR project.
+    db : SCDB() object, optional
+        Database object for the LISC project.
     """
 
     # Check for database object, initialize if not provided
@@ -43,9 +43,9 @@ def save_pickle_obj(obj, f_name, db=None):
         raise InconsistentDataError('Object type unclear - can not save.')
 
     # Save out labels header file
-    with open(os.path.join(save_path, 'labels.txt'), 'w') as outfile:
-        for label in obj.labels:
-            outfile.write("%s\n" % label)
+    #with open(os.path.join(save_path, 'labels.txt'), 'w') as outfile:
+    #    for label in obj.labels:
+    #        outfile.write("%s\n" % label)
 
     # Save pickle file
     save_file = os.path.join(save_path, save_name)
@@ -59,7 +59,7 @@ def load_pickle_obj(f_name, db=None):
     ----------
     f_name : str
         File name of the object to be loaded.
-    db : ERPDB object, optional
+    db : SCDB object, optional
         Database object for the SCANR project.
     """
 

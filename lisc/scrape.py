@@ -62,9 +62,18 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     # Sort out terms
     n_terms_a = len(terms_lst_a)
     if len(terms_lst_b) == 0:
-	    terms_lst_b = terms_lst_a
-	    excls_lst_b = excls_lst_a
+        square = True
+        terms_lst_b = terms_lst_a
+        excls_lst_b = excls_lst_a
+    else:
+        square = False
     n_terms_b = len(terms_lst_b)
+
+    # Check exclusions
+    if not excls_lst_a:
+        excls_lst_a = [[] for i in range(n_terms_a)]
+    if not excls_lst_b:
+        excls_lst_b = [[] for i in range(n_terms_b)]
 
     # Initialize vectors of counts for each term independently
     terms_a_counts = np.zeros([n_terms_a])
@@ -78,22 +87,22 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     meta_dat['db_info'] = _get_db_info(req, urls.info)
 
     # Initialize count variables to the correct length
-    term_a_counts = np.zeros([n_terms_a])
-    term_b_counts = np.zeros([n_terms_b])
+    term_a_counts = np.ones([n_terms_a]) * -1
+    term_b_counts = np.ones([n_terms_b]) * -1
 
     # Initialize right size matrices to store data
-    dat_numbers = np.zeros([n_terms_a, n_terms_b], dtype=int)
-    dat_percent = np.zeros([n_terms_a, n_terms_b])
+    dat_numbers = np.ones([n_terms_a, n_terms_b], dtype=int) * -1
+    dat_percent = np.ones([n_terms_a, n_terms_b]) * -1
 
     # Loop through each term (list-A)
-    for term_a in terms_lst_a:
+    for a_ind, term_a in enumerate(terms_lst_a):
 
         # Get the index of the current term
-        a_ind = terms_lst_a.index(term_a)
+        #a_ind = terms_lst_a.index(term_a)
 
         # Print out status
         if verbose:
-            print('Running counts for: ', terms_lst_a[0])
+            print('Running counts for: ', terms_lst_a[a_ind][0])
 
         # Get number of results for current term search
         url = urls.search + _mk(terms_lst_a[a_ind]) + \
@@ -101,10 +110,13 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
         term_a_counts[a_ind] = _get_count(req, url)
 
         # Loop through each term (list-b)
-        for term_b in terms_lst_b:
+        for b_ind, term_b in enumerate(terms_lst_b):
+
+            if square and dat_numbers[a_ind, b_ind] != -1:
+                continue
 
             # Get the indices of the current term
-            b_ind = terms_lst_b.index(term_b)
+            #b_ind = terms_lst_b.index(term_b)
 
             # Get number of results for just term search
             url = urls.search + _mk(terms_lst_b[b_ind]) + \
@@ -120,6 +132,12 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
             count = _get_count(req, url)
             dat_numbers[a_ind, b_ind] = count
             dat_percent[a_ind, b_ind] = count / term_a_counts[a_ind]
+            if square:
+                dat_numbers[b_ind, a_ind] = count
+                dat_percent[b_ind, a_ind] = count / term_b_counts[b_ind]
+
+        np.save('dat_numbers_' + term_a[0] + '.npy', dat_numbers)
+        np.save('dat_percent_' + term_a[0] + '.npy', dat_percent)
 
     # Set Requester object as finished being used
     req.close()
@@ -128,14 +146,14 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     return dat_numbers, dat_percent, term_a_counts, term_b_counts, meta_dat
 
 
-def scrape_words(terms_lst, exclusions_lst, db='pubmed', retmax=None, use_hist=False, verbose=False):
+def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_hist=False, verbose=False):
     """Search through pubmed for all abstracts referring to a given term, pull, and save that data.
 
     Parameters
     ----------
     terms_lst : list of list of str
         xx
-    exclusions_lst : list of list of str
+    exclusions_lst : list of list of str, optional
         xx
     db : str, optional (default: 'pubmed')
         xx
@@ -180,6 +198,10 @@ def scrape_words(terms_lst, exclusions_lst, db='pubmed', retmax=None, use_hist=F
     # Get current information about database being used
     meta_dat['db_info'] = _get_db_info(req, urls.info)
 
+    # Check exclusions
+    if not exclusions_lst:
+        exclusions_lst = [[] for i in range(len(terms_lst))]
+
     # Loop through all the terms
     for ind, terms in enumerate(terms_lst):
 
@@ -191,7 +213,7 @@ def scrape_words(terms_lst, exclusions_lst, db='pubmed', retmax=None, use_hist=F
         cur_dat = Data(terms[0], terms)
 
         # Set up search terms - add exclusions, if there are any
-        if exclusions_lst[ind][0]:
+        if exclusions_lst[ind]:
             term_arg = comb_terms(terms, 'or') + comb_terms(exclusions_lst[ind], 'not')
         else:
             term_arg = comb_terms(terms, 'or')
@@ -343,7 +365,7 @@ def _get_count(req, url):
 def _mk(t_lst, cm=''):
     """Create search term component."""
 
-    if t_lst[0]:
+    if t_lst and t_lst[0]:
         return cm + comb_terms(t_lst, 'or')
     else:
         return ''
