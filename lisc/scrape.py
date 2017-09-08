@@ -195,6 +195,9 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
         # Create the url for the search term
         url = urls.search + term_arg
 
+        # Update History
+        cur_dat.update_history('Start Scrape')
+
         # Get page and parse
         page = req.get_url(url)
         page_soup = BeautifulSoup(page.content, 'lxml')
@@ -211,31 +214,13 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
             web_env = page_soup.find('webenv').text
             query_key = page_soup.find('querykey').text
 
-            # Update History
-            cur_dat.update_history('Start Scrape')
-
             #
             while ret_start < count:
 
-                #
+                # Get article page, scrape data, update position
                 art_url = urls.fetch + '&WebEnv=' + web_env + '&query_key=' + query_key + \
                           '&retstart=' + str(ret_start) + '&retmax=' + str(ret_max)
-                art_page = req.get_url(art_url)
-                art_page_soup = BeautifulSoup(art_page.content, "xml")
-
-                # Pull out articles
-                articles = art_page_soup.findAll('PubmedArticle')
-
-                # Loop through each article, extracting relevant information
-                for ind, art in enumerate(articles):
-
-                    # Get ID of current article
-                    new_id = _process_ids(extract(art, 'ArticleId', 'all'), 'pubmed')
-
-                    # Extract and add all relevant info from current articles to Data object
-                    cur_dat = _extract_add_info(cur_dat, new_id, art)
-
-                #
+                cur_dat = _scrape_papers(req, art_url, cur_dat)
                 ret_start += ret_max
 
         # Without using history
@@ -247,25 +232,9 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
             # Convert ids to string
             ids_str = _ids_to_str(ids)
 
-            # Get article page
+            # Get article page & scrape data
             art_url = urls.fetch + '&id=' + ids_str
-            art_page = req.get_url(art_url)
-            art_page_soup = BeautifulSoup(art_page.content, "xml")
-
-            # Pull out articles
-            articles = art_page_soup.findAll('PubmedArticle')
-
-            # Update History
-            cur_dat.update_history('Start Scrape')
-
-            # Loop through each article, extracting relevant information
-            for ind, art in enumerate(articles):
-
-                # Get ID of current article
-                new_id = int(ids[ind].text)
-
-                # Extract and add all relevant info from current articles to Data object
-                cur_dat = _extract_add_info(cur_dat, new_id, art)
+            cur_dat = _scrape_papers(req, art_url, cur_dat)
 
         # Check consistency of extracted results
         cur_dat.check_results()
@@ -276,7 +245,6 @@ def scrape_dat_words(terms, labels, exclusions, db='pubmed', retmax=None, use_hi
 
     # Set Requester object as finished being used
     req.close()
-
 
 ##############################################################################################################
 ##############################################################################################################
@@ -308,6 +276,41 @@ def _get_db_info(req, info_url):
         db_info[field] = extract(info_page_soup, field, 'str')
 
     return db_info
+
+
+def _scrape_papers(req, art_url, cur_dat):
+    """
+
+    Parameters
+    ----------
+    req :
+        xx
+    art_url :
+        xx
+
+    Returns
+    -------
+    cur_dat :
+        xx
+    """
+
+    # Get page of all articles
+    art_page = req.get_url(art_url)
+    art_page_soup = BeautifulSoup(art_page.content, "xml")
+
+    # Pull out articles
+    articles = art_page_soup.findAll('PubmedArticle')
+
+    # Loop through each article, extracting relevant information
+    for ind, art in enumerate(articles):
+
+        # Get ID of current article
+        new_id = _process_ids(extract(art, 'ArticleId', 'all'), 'pubmed')
+
+        # Extract and add all relevant info from current articles to Data object
+        cur_dat = _extract_add_info(cur_dat, new_id, art)
+
+    return cur_dat
 
 
 def _get_count(req, url):
@@ -498,7 +501,7 @@ def _process_pub_date(pub_date):
 
     # Extract year, convert to int if not None
     year = extract(pub_date, 'Year', 'str')
-    if year: year = int(year)
+    year = int(year) if year else year
 
     # Extract month
     month = extract(pub_date, 'Month', 'str')
@@ -523,5 +526,7 @@ def _process_ids(ids, id_type):
 
     lst = [str(i.contents[0]) for i in ids if i.attrs == {'IdType' : id_type}]
 
-    if lst == []: return None
-    else: return lst[0]
+    #if lst == []: return None
+    #else: return lst[0]
+
+    return None if not lst else lst
