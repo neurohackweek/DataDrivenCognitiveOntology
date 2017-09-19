@@ -4,7 +4,6 @@ import pkg_resources as pkg
 from bs4 import BeautifulSoup
 
 from lisc.core.utils import extract
-#from lisc.core.requester import Requester
 from lisc.core.errors import InconsistentDataError
 
 #######################################################################################
@@ -28,8 +27,6 @@ class Base(object):
         Exclusion words for each term, used to avoid unwanted articles.
     n_terms : int
         Number of terms.
-    req : Requester() object
-        Object to handle URL requests.
     date : str
         Date data was collected.
     meta_dat : dict
@@ -56,12 +53,6 @@ class Base(object):
         # Initialize counters for numbers of terms
         self.n_terms = int()
 
-        # Requester object for handling URL calls
-        #self.req = Requester()
-
-        # Initialize for date that data is collected
-        #self.date = str()
-
 
     def set_terms(self, terms):
         """Sets the given list of strings as terms to use.
@@ -86,7 +77,13 @@ class Base(object):
 
 
     def set_terms_file(self, terms_f_name):
-        """Load terms from a txt file."""
+        """Load terms from a txt file.
+
+        Parameters
+        ----------
+        terms_f_name : str
+            File name to load terms from.
+        """
 
         # Unload previous terms if some are already loaded
         self.unload_terms()

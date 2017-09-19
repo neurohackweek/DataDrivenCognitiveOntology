@@ -1,30 +1,10 @@
-"""Basic utility functions for ERP-SCANR."""
+"""Basic utility functions for LISC."""
 
 import os
 
-################################################################################################
-################################# ERPSC - UTILS - FUNCTIONS ####################################
-################################################################################################
-
-def erp_file_numbers(f_name):
-    """Rewrites the number prefix in ERP term files.
-
-    Parameters
-    ----------
-    f_name : str
-        Full file path & name for file to run.
-    """
-
-    os.rename(f_name, 'temp.txt')
-
-    with open('temp.txt', 'r') as old_file:
-        with open(f_name, 'w') as new_file:
-
-            for ind, line in enumerate(old_file):
-                new_file.write('{:02}'.format(ind+1) + '-' + line[3:])
-
-    os.remove('temp.txt')
-
+###############################################################################################
+################################# LISC - UTILS - FUNCTIONS ####################################
+###############################################################################################
 
 def comb_terms(lst, jt):
     """Combine a list of terms to use as search arguments.
@@ -66,9 +46,8 @@ def extract(dat, tag, how):
     how : {'raw', 'all' , 'txt', 'str'}
         Method to extract the data.
             raw - extract an embedded tag
-            all - extract all embedded tags
-            txt - extract text as unicode
             str - extract text and convert to string
+            all - extract all embedded tags
 
     Returns
     -------
@@ -84,11 +63,8 @@ def extract(dat, tag, how):
     try:
         if how is 'raw':
             return dat.find(tag)
-        # NOTE: SWITCHED TXT TO STR AND DROPPED STR WITH MOVE TO PY35
         elif how is 'str':
             return dat.find(tag).text
-        #elif how is 'str':
-        #    return dat.find(tag).text.encode('ascii', 'ignore')
         elif how is 'all':
             return dat.findAll(tag)
 

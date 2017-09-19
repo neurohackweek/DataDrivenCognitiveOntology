@@ -20,25 +20,30 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     Parameters
     ----------
     terms_lst_a : list of list of str
-        Search terms
-    terms_lst_b : list of list of str, optional
-        xx
+        Search terms.
     excl_lst_a : list of list of str, optional
-        xx
+        Exclusion words for search terms.
+    terms_lst_b : list of list of str, optional
+        Secondary list of search terms.
     excl_lst_b : list of list of str, optional
-        xx
-    db : str
-        xx
-    verbose : bool
-        xx
+        Exclusion words for secondary list of search terms.
+    db : str, optional (default: 'pubmed')
+        Which pubmed database to use.
+    verbose : bool, optional (default: False)
+        Whether to print out updates.
 
     Returns
     -------
-    dat_numbers :
-        xx
-    dat_percent :
-        xx
-
+    dat_numbers : 2d array
+        The numbers of papers found for each combination of terms.
+    dat_percent : 2d array
+        The percentage of papers for each term that include the corresponding term.
+    term_a_counts : 1d array
+        Number of papers for each term.
+    term_b_counts : 1d array
+        Number of papers for each term, in the secondary list of terms.
+    meta_dat : dict
+        Meta data from the scrape.
 
     The scraping does an exact word search for two terms.
 
@@ -46,6 +51,7 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     This field contains the number of papers with both terms. This is extracted.
     """
 
+    # Initialize meta data
     meta_dat = dict()
 
     # Requester object
@@ -71,9 +77,9 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
 
     # Check exclusions
     if not excls_lst_a:
-        excls_lst_a = [[] for i in range(n_terms_a)]
+        excls_lst_a = [[]] * n_terms_a
     if not excls_lst_b:
-        excls_lst_b = [[] for i in range(n_terms_b)]
+        excls_lst_b = [[]] * n_terms_b
 
     # Initialize vectors of counts for each term independently
     terms_a_counts = np.zeros([n_terms_a])
@@ -97,9 +103,6 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     # Loop through each term (list-A)
     for a_ind, term_a in enumerate(terms_lst_a):
 
-        # Get the index of the current term
-        #a_ind = terms_lst_a.index(term_a)
-
         # Print out status
         if verbose:
             print('Running counts for: ', terms_lst_a[a_ind][0])
@@ -112,11 +115,9 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
         # Loop through each term (list-b)
         for b_ind, term_b in enumerate(terms_lst_b):
 
+            # Skip scrapes of equivalent term combinations - if single term list
             if square and dat_numbers[a_ind, b_ind] != -1:
                 continue
-
-            # Get the indices of the current term
-            #b_ind = terms_lst_b.index(term_b)
 
             # Get number of results for just term search
             url = urls.search + _mk(terms_lst_b[b_ind]) + \
@@ -130,14 +131,17 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
                     _mk(excls_lst_b[b_ind], 'NOT')
 
             count = _get_count(req, url)
+
             dat_numbers[a_ind, b_ind] = count
             dat_percent[a_ind, b_ind] = count / term_a_counts[a_ind]
+
             if square:
                 dat_numbers[b_ind, a_ind] = count
                 dat_percent[b_ind, a_ind] = count / term_b_counts[b_ind]
 
-        np.save('dat_numbers_' + term_a[0] + '.npy', dat_numbers)
-        np.save('dat_percent_' + term_a[0] + '.npy', dat_percent)
+        # Save (?)
+        #np.save('dat_numbers_' + term_a[0] + '.npy', dat_numbers)
+        #np.save('dat_percent_' + term_a[0] + '.npy', dat_percent)
 
     # Set Requester object as finished being used
     req.close()
@@ -146,27 +150,33 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     return dat_numbers, dat_percent, term_a_counts, term_b_counts, meta_dat
 
 
-def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_hist=False, verbose=False):
-    """Search through pubmed for all abstracts referring to a given term, pull, and save that data.
+def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None,
+                 use_hist=False, save_n_clear=True, verbose=False):
+    """Search and scrape from pubmed for all abstracts referring to a given term.
 
     Parameters
     ----------
     terms_lst : list of list of str
-        xx
+        Search terms.
     exclusions_lst : list of list of str, optional
-        xx
+        Exclusion words for search terms.
     db : str, optional (default: 'pubmed')
-        xx
+        Which pubmed database to use.
     retmax : int, optional
-        xx
+        Maximum number of records to return.
     use_hist : bool, optional (default: False)
-        xx
+        Use e-utilities history: storing results on their server, as needed.
+    save_n_clear : bool, optional (default: False)
+        Whether to
     verbose : bool, optional (default: False)
-        xx
+        Whether to print out updates.
 
     Returns
     -------
-    ??
+    results : list of lisc Data() objects
+        Results from the scraping data for each term.
+    meta_dat : dict
+        Meta data from the scrape.
 
     Notes
     -----
@@ -175,8 +185,6 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_his
     For each article, pulls and saves out data (including title, abstract, authors, etc)
         Pulls data using the hierarchical tag structure that organize the articles.
         This procedure loops through each article tag.
-
-    NOTE: retmax currently not used when use_hist is True (will scrape all). Problem?
     """
 
     results = []
@@ -231,16 +239,16 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_his
         # Using history
         if use_hist:
 
-            #
+            # Initialize to start, and number of papers per iteration
             ret_start = 0
             ret_max = 100
 
-            #
+            # Get number of papers, and keys to use history
             count = int(page_soup.find('count').text)
             web_env = page_soup.find('webenv').text
             query_key = page_soup.find('querykey').text
 
-            #
+            # Loop through pulling paper data, using history
             while ret_start < count:
 
                 # Get article page, scrape data, update position
@@ -248,6 +256,10 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_his
                           '&retstart=' + str(ret_start) + '&retmax=' + str(ret_max)
                 cur_dat = _scrape_papers(req, art_url, cur_dat)
                 ret_start += ret_max
+
+                # Stop after retmax
+                if ret_start > ret_max:
+                    break
 
         # Without using history
         else:
@@ -267,7 +279,8 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None, use_his
         cur_dat.update_history('End Scrape')
 
         # Save out and clear data
-        cur_dat.save_n_clear()
+        if save_n_clear:
+            cur_dat.save_n_clear()
         results.append(cur_dat)
 
     # Set Requester object as finished being used
@@ -309,19 +322,19 @@ def _get_db_info(req, info_url):
 
 
 def _scrape_papers(req, art_url, cur_dat):
-    """
+    """Scrape information for each article found for a given term.
 
     Parameters
     ----------
-    req :
-        xx
-    art_url :
-        xx
+    req : Requester() object
+        Manages request
+    art_url : str
+        URL for the article to be scraped
 
     Returns
     -------
-    cur_dat :
-        xx
+    cur_dat : Data() object
+        Object to store information for the current term.
     """
 
     # Get page of all articles
@@ -350,6 +363,11 @@ def _get_count(req, url):
     ----------
     url : str
         URL to search with.
+
+    Returns
+    -------
+    count : int
+        Count of the number of articles found.
     """
 
     # Request page from URL
@@ -359,11 +377,29 @@ def _get_count(req, url):
     # Get all count tags
     counts = extract(page_soup, 'count', 'all')
 
-    return int(counts[0].text)
+    try:
+        count = int(counts[0].text)
+    except IndexError:
+        count = 0
+
+    return count
 
 
 def _mk(t_lst, cm=''):
-    """Create search term component."""
+    """Create search term component.
+
+    Parameters
+    ----------
+    t_lst : list of str
+        List of words to connect together.
+    cm : str
+        Connector word to append to front of search term.
+
+    Returns
+    -------
+    str
+        Search term.
+    """
 
     if t_lst and t_lst[0]:
         return cm + comb_terms(t_lst, 'or')
@@ -371,9 +407,9 @@ def _mk(t_lst, cm=''):
         return ''
 
 
-#######################################################################################################
+######################################################################################################
 ################################# LISC - WORDS - FUNCTIONS (PRIVATE) #################################
-#######################################################################################################
+######################################################################################################
 
 def _extract_add_info(cur_dat, new_id, art):
     """Extract information from article web page and add to
@@ -389,8 +425,8 @@ def _extract_add_info(cur_dat, new_id, art):
 
     Returns
     -------
-    cur_dat : ?
-        xx
+    cur_dat : Data() object
+        Object to store data from the current term.
 
     NOTES
     -----
@@ -461,13 +497,15 @@ def _process_words(text):
     words = nltk.word_tokenize(text)
 
     # Remove stop words, and non-alphabetical tokens (punctuation). Return the result.
-    return [word.lower() for word in words if ((not word.lower() in stopwords.words('english'))
-                                               & word.isalnum())]
+    words_cleaned =  [word.lower() for word in words if (
+        (not word.lower() in stopwords.words('english')) & word.isalnum())]
+
+    return words_cleaned
 
 
 @CatchNone
 def _process_kws(keywords):
-    """Processes keywords - extract the keywords from tags and converts to strings.
+    """Extract and process keywords data.
 
     Parameters
     ----------
@@ -485,7 +523,7 @@ def _process_kws(keywords):
 
 @CatchNone
 def _process_authors(author_list):
-    """
+    """Extract and process author data.
 
     Parameters
     ----------
@@ -514,7 +552,7 @@ def _process_authors(author_list):
 
 @CatchNone2
 def _process_pub_date(pub_date):
-    """
+    """Extract and process publication date data.
 
     Parameters
     ----------
@@ -523,10 +561,10 @@ def _process_pub_date(pub_date):
 
     Returns
     -------
-    year : int
-        xx
-    month : str
-        xx
+    year : int or None
+        Year the article was published.
+    month : str or None
+        Month the article was published.
     """
 
     # Extract year, convert to int if not None
@@ -541,7 +579,7 @@ def _process_pub_date(pub_date):
 
 @CatchNone
 def _process_ids(ids, id_type):
-    """
+    """Extract and process ID data.
 
     Parameters
     ----------

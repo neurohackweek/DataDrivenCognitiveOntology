@@ -23,12 +23,14 @@ class SCDB(object):
         Path to the folder to save out figures.
     """
 
-    def __init__(self, auto_gen=True):
+    def __init__(self, project_path=None, auto_gen=True):
         """Initialize SCDB object."""
 
         # Set base path for the project
-        self.project_path = ("/Users/tom/Desktop/PROJECT/")
-
+        if not project_path:
+            self.project_path = ("/Users/tom/Documents/Research/1-Projects/CognitiveOntology/")
+        else:
+            self.project_path = project_path
 
         # Initialize paths
         self.data_path = str()

@@ -1,12 +1,8 @@
 """Classe for Count analysis (key word co-occurences in papers)."""
 
-import datetime
 import numpy as np
-from bs4 import BeautifulSoup
 
 from lisc.base import Base
-from lisc.core.urls import URLS
-from lisc.core.utils import comb_terms, extract
 from lisc.scrape import scrape_counts
 
 ##############################################################################################
@@ -14,22 +10,22 @@ from lisc.scrape import scrape_counts
 ##############################################################################################
 
 class Count(object):
-    """This is a class for counting co-occurence of pre-specified ERPs & terms.
+    """This is a class for counting co-occurence of pre-specified terms list(s).
 
     Attributes
     ----------
     terms : dict()
-        xx
-    dat_numbers :
-        xx
-    dat_percent :
-        xc
+        Search terms to use.
+    dat_numbers : 2d array
+        The numbers of papers found for each combination of terms.
+    dat_percent : 2d array
+        The percentage of papers for each term that include the corresponding term.
     """
 
     def __init__(self):
         """Initialize LISC Count() object."""
 
-        #
+        # Initialize dictionary to store search terms
         self.terms = dict()
         for dat in ['A', 'B']:
             self.terms[dat] = Base()
@@ -41,43 +37,74 @@ class Count(object):
 
 
     def set_terms(self, terms, dim='A'):
-        """   """
+        """Sets the given list of strings as terms to use.
+
+        Parameters
+        ----------
+        terms : list of str OR list of list of str
+            List of terms to be used.
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
+        """
 
         self.terms[dim].set_terms(terms)
         self.terms[dim].counts = np.zeros(self.terms[dim].n_terms)
 
 
     def set_exclusions(self, exclusions, dim='A'):
-        """   """
+        """Sets the given list of strings as exclusion words.
+
+        Parameters
+        ----------
+        exclusions : list of str OR list of list of str
+            List of exclusion words to be used.
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
+        """
 
         self.terms[dim].set_exclusions(exclusions)
 
 
     def run_scrape(self, db='pubmed', verbose=False):
-        """   """
+        """Scrape co-occurence data.
+
+        Parameters
+        ----------
+        db : str, optional (default: 'pubmed')
+            Which pubmed database to use.
+        verbose : bool, optional (default=False)
+            Whether to print out updates.
+        """
 
         # Run single list of terms against themselves
         if not self.terms['B'].has_dat:
-            print('RUNNING A by A')
-            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts, self.meta_dat = \
-                scrape_counts(
-                    terms_lst_a = self.terms['A'].terms,
-                    excls_lst_a = self.terms['A'].exclusions,
-                    db=db, verbose=verbose)
+            self.dat_numbers, self.dat_percent, self.terms['A'].counts, \
+                self.terms['B'].counts, self.meta_dat = \
+                    scrape_counts(
+                        terms_lst_a = self.terms['A'].terms,
+                        excls_lst_a = self.terms['A'].exclusions,
+                        db=db, verbose=verbose)
 
         # Run two different sets of terms
         else:
-            self.dat_numbers, self.dat_percent, self.terms['A'].counts, self.terms['B'].counts, self.meta_dat = \
-                scrape_counts(
-                    terms_lst_a = self.terms['A'].terms,
-                    excls_lst_a = self.terms['A'].exclusions,
-                    terms_lst_b = self.terms['B'].terms,
-                    excls_lst_b = self.terms['B'].exclusions,
-                    db=db, verbose=verbose)
+            self.dat_numbers, self.dat_percent, self.terms['A'].counts, \
+                self.terms['B'].counts, self.meta_dat = \
+                    scrape_counts(
+                        terms_lst_a = self.terms['A'].terms,
+                        excls_lst_a = self.terms['A'].exclusions,
+                        terms_lst_b = self.terms['B'].terms,
+                        excls_lst_b = self.terms['B'].exclusions,
+                        db=db, verbose=verbose)
 
 
     def check_cooc(self, dim='A'):
-        """"Prints out the terms most associatied with each ERP."""
+        """"Prints out the most frequent association for each term.
+
+        Parameters
+        ----------
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
+        """
 
         # Loop through each erp term, find maximally associated term term and print out
         for term_ind, term in enumerate(self.terms[dim].labels):
@@ -92,7 +119,13 @@ class Count(object):
 
 
     def check_top(self, dim='A'):
-        """Check the terms with the most papers."""
+        """Check the terms with the most papers.
+
+        Parameters
+        ----------
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
+        """
 
         # Find and print the term for which the most papers were found
         print("The most studied term is  {:6}  with {:8.0f} papers"
@@ -105,7 +138,8 @@ class Count(object):
 
         Parameters
         ----------
-
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
         """
 
         # Check counts for all terms
@@ -120,8 +154,8 @@ class Count(object):
         ----------
         n : int
             Mininum number of articles to keep each term.
-        dim : ?
-            xx
+        dim : 'A' or 'B', optional
+            Which set of terms to operate upon.
         """
 
         keep_inds = np.where(self.terms[dim].counts > n)[0]

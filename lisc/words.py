@@ -20,9 +20,9 @@ class Words(Base):
     """
 
     def __init__(self):
-        """Initialize ERP-SCANR Words() object."""
+        """Initialize LISC Words() object."""
 
-        # Inherit from ERPSC Base Class
+        # Inherit from Base Class
         Base.__init__(self)
 
         # Initialize a list to store results for all the erps
@@ -36,7 +36,7 @@ class Words(Base):
         Parameters
         ----------
         key : str
-            xx
+            Term name to get from results data.
         """
 
         # Give up if object is empty
@@ -58,16 +58,31 @@ class Words(Base):
         Parameters
         ----------
         new_result : Data() object
-            Object with information about current ERP term.
+            Object with information about current term.
         """
 
         self.result_keys.append(new_result.label)
         self.results.append(new_result)
 
 
-    def run_scrape(self, db='pubmed', retmax=None, use_hist=False, verbose=False):
-        """Launch a scrape of words data."""
+    def run_scrape(self, db='pubmed', retmax=None, use_hist=False, save_n_clear=True, verbose=False):
+        """Launch a scrape of words data.
+
+        Parameters
+        ----------
+        db : str, optional (default: 'pubmed')
+            Which pubmed database to use.
+        retmax : int, optional
+            Maximum number of records to return.
+        use_hist : bool, optional (default: False)
+            Use e-utilities history: storing results on their server, as needed.
+        save_n_clear : bool, optional (default: False)
+            Whether to
+        verbose : bool, optional (default: False)
+            Whether to print out updates.
+        """
 
         self.results, self.meta_dat = scrape_words(self.terms, self.exclusions, db=db,
-                                                   retmax=retmax, use_hist=use_hist, verbose=verbose)
+                                                   retmax=retmax, use_hist=use_hist,
+                                                   save_n_clear=save_n_clear, verbose=verbose)
         self.results_keys = [dat.label for dat in self.results]

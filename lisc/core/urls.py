@@ -1,4 +1,4 @@
-"""URLs for the ERP-SCANR project.
+"""URLs for the SCANR project.
 
 External Documentation
 ----------------------
@@ -36,22 +36,16 @@ field : the search field to search within.
 retmax : Maximum number of records to return.
 retmode : Format to return.
 usehistory : Whether to store findings on remote server.
-
-
-TODO:
-  - Figure out 'HTTP POST' for large # of ID fetches
 """
 
 from lisc.core.errors import InconsistentDataError
 
 ##########################################################################################
 ##########################################################################################
-##########################################################################################
 
 # Whether to add pubmed authentification details for ERP-SCANR tool
 AUTH = False
 
-##########################################################################################
 ##########################################################################################
 ##########################################################################################
 
@@ -78,9 +72,6 @@ class URLS(object):
 
     def __init__(self, db=None, usehistory='n', retmax=None, field=None, retmode=None, auto_gen=False):
         """Initialize the ncbi e-utils urls.
-
-        NOTE:
-        defaults: retmax: 500, field: '', retmode:'xml'
 
         Parameters
         ----------
@@ -115,16 +106,9 @@ class URLS(object):
         self.args = dict()
         self.save_args()
 
-        # ?
         if auto_gen:
             self.build_search([])
             self.build_fetch([])
-
-        # OLD:
-        # Set the search url
-        #self.search = self.base_url + 'esearch.fcgi?db=pmc&field=word&term='
-        #self.fetch = self.base_url + ''
-        #self.retmax = ''
 
 
     def save_settings(self, usehistory=None, db=None, retmax=None, field=None, retmode=None):
@@ -233,9 +217,6 @@ class URLS(object):
         ----------
         args_to_use : list of str
             Arguments to use to build the search URL.
-
-        Notes
-        old: self.search = search_base + self.db_arg + '&' + self.field_arg + '&' + 'term='
         """
 
         # Check requested args are defined in settings
@@ -253,9 +234,6 @@ class URLS(object):
         ----------
         args_to_use : list of str
             Arguments to use to build the fetch URL.
-
-        Notes
-        old: self.fetch = fetch_base + self.db_arg + '&' + self.retmode_arg + '&' + 'id='
         """
 
         # Check requested args are defined in settings
@@ -263,7 +241,7 @@ class URLS(object):
 
         # Set the fetch url
         fetch_base = _check_auth(self.eutils + 'efetch.fcgi?')
-        self.fetch = fetch_base + '&'.join([self.args[arg] for arg in args_to_use]) #+ '&id='
+        self.fetch = fetch_base + '&'.join([self.args[arg] for arg in args_to_use])
 
 ##########################################################################################
 ##########################################################################################

@@ -5,7 +5,7 @@ import random
 import matplotlib.pyplot as plt
 from wordcloud import WordCloud
 
-from erpsc.core.db import check_db
+from lisc.core.db import check_db
 
 ############################################################################################
 ############################################################################################
