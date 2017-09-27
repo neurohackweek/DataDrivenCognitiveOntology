@@ -237,9 +237,8 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None,
         # Using history
         if use_hist:
 
-            # Initialize to start, and number of papers per iteration
-            ret_start = 0
-            ret_max = 100
+            # Initialize to start at 0
+            ret_start_it = 0
 
             # Get number of papers, and keys to use history
             count = int(page_soup.find('count').text)
@@ -247,16 +246,20 @@ def scrape_words(terms_lst, exclusions_lst=[], db='pubmed', retmax=None,
             query_key = page_soup.find('querykey').text
 
             # Loop through pulling paper data, using history
-            while ret_start < count:
+            while ret_start_it < count:
+
+                # Set the number of papers per iteration (the ret_max per call)
+                #  This defaults to 100, but will sets to less if fewer needed to reach retmax
+                ret_end_it = min(100, int(retmax) - ret_start_it)
 
                 # Get article page, scrape data, update position
                 art_url = urls.fetch + '&WebEnv=' + web_env + '&query_key=' + query_key + \
-                          '&retstart=' + str(ret_start) + '&retmax=' + str(ret_max)
+                          '&retstart=' + str(ret_start_it) + '&retmax=' + str(ret_end_it)
                 cur_dat = _scrape_papers(req, art_url, cur_dat)
-                ret_start += ret_max
+                ret_start_it += ret_end_it
 
-                # Stop after retmax
-                if ret_start > ret_max:
+                # Stop if number of scraped papers has reached total retmax
+                if ret_start_it >= int(retmax):
                     break
 
         # Without using history
