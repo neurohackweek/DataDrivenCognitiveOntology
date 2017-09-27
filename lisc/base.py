@@ -36,7 +36,7 @@ class Base(object):
     """
 
     def __init__(self):
-        """Initialize ERP-SCANR Base() object."""
+        """Initialize Base() object."""
 
         # Initialize dictionary to store db info
         #self.db_info = dict()
@@ -44,7 +44,7 @@ class Base(object):
         # Initialize variable to keep track of term type used
         self.terms_type = str()
 
-        # Initialize list of erps & term terms to use, including labels
+        # Initialize list of terms to use, including exclusions & labels
         self.terms = list()
         self.labels = list()
         self.exclusions = list()
@@ -143,13 +143,13 @@ class Base(object):
         # Unload previous terms if some are already loaded
         self.unload_exclusions()
 
-        # Set given list as erp exclusion words
+        # Set given list as exclusion words
         for exclude in exclusions:
             self.exclusions.append(_check_type(exclude))
 
-        # Check that the number of exclusions matches n_erps
+        # Check that the number of exclusions matches n_terms
         if len(exclusions) != self.n_terms:
-            raise InconsistentDataError('Mismatch in number of exclusions and erps!')
+            raise InconsistentDataError('Mismatch in number of exclusions and terms!')
 
 
     def set_exclusions_file(self):
@@ -161,9 +161,9 @@ class Base(object):
         # Get exclusion words from module data file
         exclusions = _terms_load_file('exclusions')
 
-        # Check that the number of exclusions matches n_erps
+        # Check that the number of exclusions matches n_terms
         if len(exclusions) != self.n_terms:
-            raise InconsistentDataError('Mismatch in number of exclusions and erps!')
+            raise InconsistentDataError('Mismatch in number of exclusions and terms!')
 
         # Drop number indices for exclusions, and set as list
         for i in range(self.n_terms):
