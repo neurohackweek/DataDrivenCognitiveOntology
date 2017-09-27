@@ -1,4 +1,4 @@
-"""Classe for Count analysis (key word co-occurences in papers)."""
+"""Class for Count analysis (key word co-occurences in papers)."""
 
 import numpy as np
 
@@ -20,6 +20,8 @@ class Count(object):
         The numbers of papers found for each combination of terms.
     dat_percent : 2d array
         The percentage of papers for each term that include the corresponding term.
+    square : bool
+        Whether the count data matrix is symetrical.
     """
 
     def __init__(self):
@@ -34,6 +36,7 @@ class Count(object):
         # Initialize data output variables
         self.dat_numbers = np.zeros(0)
         self.dat_percent = np.zeros(0)
+        self.square = bool()
 
 
     def set_terms(self, terms, dim='A'):
@@ -76,14 +79,15 @@ class Count(object):
             Whether to print out updates.
         """
 
-        # Run single list of terms against themselves
+        # Run single list of terms against themselves - 'square'
         if not self.terms['B'].has_dat:
             self.dat_numbers, self.dat_percent, self.terms['A'].counts, \
-                self.terms['B'].counts, self.meta_dat = \
+                _, self.meta_dat = \
                     scrape_counts(
                         terms_lst_a = self.terms['A'].terms,
                         excls_lst_a = self.terms['A'].exclusions,
                         db=db, verbose=verbose)
+            self.square = True
 
         # Run two different sets of terms
         else:
@@ -95,6 +99,7 @@ class Count(object):
                         terms_lst_b = self.terms['B'].terms,
                         excls_lst_b = self.terms['B'].exclusions,
                         db=db, verbose=verbose)
+            self.square = False
 
 
     def check_cooc(self, dim='A'):
@@ -107,8 +112,8 @@ class Count(object):
         """
 
         # Set up which direction to act across
-        alt = 'B' if dim is 'A' else 'A'
         dat = self.dat_percent if dim is 'A' else self.dat_percent.T
+        alt = 'B' if dim is 'A' and not self.square else 'A'
 
         # Loop through each erp term, find maximally associated term term and print out
         for term_ind, term in enumerate(self.terms[dim].labels):
