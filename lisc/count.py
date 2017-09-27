@@ -29,7 +29,7 @@ class Count(object):
         self.terms = dict()
         for dat in ['A', 'B']:
             self.terms[dat] = Base()
-            self.terms[dat].counts = np.zeros(0)
+            self.terms[dat].counts = np.zeros(0, dtype=int)
 
         # Initialize data output variables
         self.dat_numbers = np.zeros(0)
@@ -48,7 +48,7 @@ class Count(object):
         """
 
         self.terms[dim].set_terms(terms)
-        self.terms[dim].counts = np.zeros(self.terms[dim].n_terms)
+        self.terms[dim].counts = np.zeros(self.terms[dim].n_terms, dtype=int)
 
 
     def set_exclusions(self, exclusions, dim='A'):
@@ -106,16 +106,20 @@ class Count(object):
             Which set of terms to operate upon.
         """
 
+        # Set up which direction to act across
+        alt = 'B' if dim is 'A' else 'A'
+        dat = self.dat_percent if dim is 'A' else self.dat_percent.T
+
         # Loop through each erp term, find maximally associated term term and print out
         for term_ind, term in enumerate(self.terms[dim].labels):
 
             # Find the index of the most common association for current term
-            assoc_ind = np.argmax(self.dat_percent[term_ind, :])
+            assoc_ind = np.argmax(dat[term_ind, :])
 
             # Print out the results
-            print("For the  {:5} the most common association is \t {:18} with \t %{:05.2f}"
-                  .format(term, self.terms[dim].labels[term_ind], \
-                  self.dat_percent[term_ind, assoc_ind]*100))
+            print("For the  {:12} the most common association is \t {:18} with \t %{:05.2f}"
+                  .format(term, self.terms[alt].labels[assoc_ind], \
+                  dat[term_ind, assoc_ind]*100))
 
 
     def check_top(self, dim='A'):
@@ -128,7 +132,7 @@ class Count(object):
         """
 
         # Find and print the term for which the most papers were found
-        print("The most studied term is  {:6}  with {:8.0f} papers"
+        print("The most studied term is  {:12}  with {:8.0f} papers"
               .format(self.terms[dim].labels[np.argmax(self.terms[dim].counts)], \
               self.terms[dim].counts[np.argmax(self.terms[dim].counts)]))
 
@@ -144,7 +148,7 @@ class Count(object):
 
         # Check counts for all terms
         for ind, term in enumerate(self.terms[dim].labels):
-            print('{:5} - {:8.0f}'.format(term, self.terms[dim].counts[ind]))
+            print('{:12} - {:8.0f}'.format(term, self.terms[dim].counts[ind]))
 
 
     def drop_data(self, n, dim='A'):
