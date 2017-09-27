@@ -54,7 +54,7 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     # Initialize meta data
     meta_dat = dict()
 
-    # Requester object
+    # Initlaize Requester object
     req = Requester()
 
     # Set date of when data was scraped
@@ -81,24 +81,21 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
     if not excls_lst_b:
         excls_lst_b = [[]] * n_terms_b
 
-    # Initialize vectors of counts for each term independently
-    terms_a_counts = np.zeros([n_terms_a])
-    terms_b_counts = np.zeros([n_terms_b])
-
-    # Initialize matrices to store co-occurence data
-    dat_numbers = np.zeros([n_terms_a, n_terms_b])
-    dat_percent = np.zeros([n_terms_a, n_terms_b])
-
-    # Get current information about database being used
-    meta_dat['db_info'] = _get_db_info(req, urls.info)
-
     # Initialize count variables to the correct length
-    term_a_counts = np.ones([n_terms_a]) * -1
-    term_b_counts = np.ones([n_terms_b]) * -1
+    term_a_counts = np.ones([n_terms_a], dtype=int) * -1
+    term_b_counts = np.ones([n_terms_b], dtype=int) * -1
 
     # Initialize right size matrices to store data
     dat_numbers = np.ones([n_terms_a, n_terms_b], dtype=int) * -1
     dat_percent = np.ones([n_terms_a, n_terms_b]) * -1
+
+    # Set diagonal to zero if square (term co-occurence with itself)
+    if square:
+        np.fill_diagonal(dat_numbers, 0)
+        np.fill_diagonal(dat_percent, 0)
+
+    # Get current information about database being used
+    meta_dat['db_info'] = _get_db_info(req, urls.info)
 
     # Loop through each term (list-A)
     for a_ind, term_a in enumerate(terms_lst_a):
@@ -116,6 +113,7 @@ def scrape_counts(terms_lst_a, excls_lst_a=[], terms_lst_b=[], excls_lst_b=[], d
         for b_ind, term_b in enumerate(terms_lst_b):
 
             # Skip scrapes of equivalent term combinations - if single term list
+            #  This will skip the diaonal row, and any combinations already scraped
             if square and dat_numbers[a_ind, b_ind] != -1:
                 continue
 
