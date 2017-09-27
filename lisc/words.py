@@ -85,4 +85,4 @@ class Words(Base):
         self.results, self.meta_dat = scrape_words(self.terms, self.exclusions, db=db,
                                                    retmax=retmax, use_hist=use_hist,
                                                    save_n_clear=save_n_clear, verbose=verbose)
-        self.results_keys = [dat.label for dat in self.results]
+        self.result_keys = [dat.label for dat in self.results]
