@@ -1,11 +1,10 @@
-"""Create data plots for ERP-SCANR project - plots for single ERPs (for ERP profiles)."""
+"""Create data plots for LISC project - plots for single terms."""
 
 import os
 import matplotlib.pyplot as plt
 
-from erpsc.core.db import check_db
+from lisc.core.db import check_db
 
-#########################################################################################
 #########################################################################################
 #########################################################################################
 

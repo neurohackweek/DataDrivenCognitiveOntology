@@ -1,4 +1,4 @@
-"""WordCloud plots for ERP-SCANR."""
+"""WordCloud plots for LISC."""
 
 import os
 import random
