@@ -1,6 +1,8 @@
 # A (Data-Driven) Cognitive Neuroscience Ontology
 
-This is a text mining project that uses automatic web scraping of relevant literature given terms of interest from the Cognitive Atlas (Poldrack et al., 2011). It includes a few tools from natural language processing to analyse and visualize the resulting corpus of literature. 
+This is a text mining project that uses automatic web scraping of relevant literature given terms of interest from the Cognitive Atlas (Poldrack et al., 2011). It includes a few tools from natural language processing to analyse and visualize the resulting corpus of literature.
+
+Note: this repository previously contained an older version of 'LISC', the 'Literature Scanner' tool. This tool is now available [here](https://github.com/lisc-tools/lisc).
 
 Contributors: Tom Donoghue, Ayala Allon, Basak Kilic, Eric Reavis, Mengya Zhang, Juliet Shafto, Nicole Roberts, Vassiki Chauhan
 
